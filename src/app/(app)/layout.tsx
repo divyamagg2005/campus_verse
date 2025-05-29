@@ -3,7 +3,7 @@
 
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/app-sidebar";
-import { AppHeader } from "@/components/layout/app-header";
+// AppHeader import removed
 import { SearchProvider, useSearch } from "@/contexts/SearchContext";
 import { SearchResultsDisplay } from "@/components/search/search-results-display";
 
@@ -14,7 +14,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
     <SidebarProvider defaultOpen={true}> {/* Default sidebar to open */}
       <AppSidebar />
       <SidebarInset className="flex flex-col">
-        <AppHeader />
+        {/* AppHeader component removed */}
         <main className="flex-1 overflow-y-auto p-0 bg-background"> {/* Adjusted padding to p-0 for full-width search results */}
           {isSearchActive ? <SearchResultsDisplay query={searchQuery} /> : children}
         </main>

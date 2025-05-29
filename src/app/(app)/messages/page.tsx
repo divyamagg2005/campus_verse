@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -77,7 +78,7 @@ export default function MessagesPage() {
 
 
   return (
-    <div className="flex h-[calc(100vh-var(--header-height,theme(spacing.14)))] border rounded-lg overflow-hidden shadow-xl">
+    <div className="flex h-[calc(100vh-theme(spacing.0))] border rounded-lg overflow-hidden shadow-xl"> {/* Adjusted height */}
       {/* Sidebar with users list */}
       <aside className="w-1/3 min-w-[280px] max-w-[350px] border-r bg-card flex flex-col">
         <div className="p-4 border-b">
