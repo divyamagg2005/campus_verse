@@ -21,9 +21,12 @@ export default function SelectCollegePage() {
       return;
     }
     setError(null);
-    // In a real app, you'd save this preference to the user's profile.
+    // Save selected college ID to localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('selectedCollegeId', selectedCollege);
+    }
     console.log("College selected:", selectedCollege);
-    router.push(`/communities/${selectedCollege}`);
+    router.push(`/feed`); // Redirect to feed page
   };
 
   return (

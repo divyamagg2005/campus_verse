@@ -51,9 +51,11 @@ export function SignupForm() {
     // Simulate API call for signup
     console.log("Signup submitted", values);
     // In a real app, you'd handle user creation, email verification.
-    // For now, redirect to the community page of the selected college.
     if (values.college) {
-      router.push(`/communities/${values.college}`);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('selectedCollegeId', values.college);
+      }
+      router.push("/feed"); 
     } else {
       // Fallback, though college is required by schema
       router.push("/feed"); 

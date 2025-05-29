@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -10,10 +11,12 @@ export interface Post {
   author: {
     name: string;
     avatarUrl: string;
-    college?: string; 
+    college?: string;
+    collegeId?: string; // Added for filtering
   };
   content?: string;
   imageUrl?: string;
+  dataAiHint?: string; // Added for placeholder images
   videoUrl?: string;
   pdfUrl?: string;
   hashtags: string[];
@@ -53,7 +56,7 @@ export function PostCard({ post }: PostCardProps) {
         
         {post.imageUrl && (
           <div className="relative aspect-video rounded-lg overflow-hidden border">
-            <Image src={post.imageUrl} alt="Post image" layout="fill" objectFit="cover" data-ai-hint="social media post" />
+            <Image src={post.imageUrl} alt="Post image" layout="fill" objectFit="cover" data-ai-hint={post.dataAiHint || "social media post"} />
           </div>
         )}
         {post.videoUrl && (

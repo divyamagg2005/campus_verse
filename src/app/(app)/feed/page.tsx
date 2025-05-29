@@ -1,15 +1,21 @@
 
+"use client"; // Make this a client component to use localStorage and useEffect
+
+import { useState, useEffect } from 'react';
 import { PostCard, type Post } from "@/components/feed/post-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Users } from "lucide-react";
 import { CommunityCard, type Community } from "@/components/communities/community-card";
+import { School } from "lucide-react"; // For prompting college selection
+import { Button } from '@/components/ui/button'; // For prompting college selection
+import Link from 'next/link'; // For prompting college selection
 
-// Dummy data for posts
-const samplePosts: Post[] = [
+// Dummy data for posts - now with collegeId
+const allSamplePosts: Post[] = [
   {
     id: "1",
-    author: { name: "Alice Wonderland", avatarUrl: "https://placehold.co/40x40.png?text=AW", college: "Stanford University" },
+    author: { name: "Alice Wonderland", avatarUrl: "https://placehold.co/40x40.png?text=AW", college: "Stanford University", collegeId: "stanford" },
     content: "Just finished my midterms! 🎉 Anyone else feeling relieved? #MidtermsDone #CollegeLife",
     hashtags: ["MidtermsDone", "CollegeLife"],
     timestamp: "2h ago",
@@ -20,7 +26,7 @@ const samplePosts: Post[] = [
   },
   {
     id: "2",
-    author: { name: "Bob The Builder", avatarUrl: "https://placehold.co/40x40.png?text=BB", college: "MIT" },
+    author: { name: "Bob The Builder", avatarUrl: "https://placehold.co/40x40.png?text=BB", college: "MIT", collegeId: "mit" },
     content: "Looking for a study group for Advanced Algorithms. DM me if interested! We'll meet at the library on Wednesdays.",
     hashtags: ["StudyGroup", "Algorithms", "MIT"],
     timestamp: "5h ago",
@@ -29,7 +35,7 @@ const samplePosts: Post[] = [
   },
   {
     id: "3",
-    author: { name: "Charlie Brown", avatarUrl: "https://placehold.co/40x40.png?text=CB", college: "Harvard University" },
+    author: { name: "Charlie Brown", avatarUrl: "https://placehold.co/40x40.png?text=CB", college: "Harvard University", collegeId: "harvard" },
     content: "Check out this amazing PDF on Quantum Physics I found! 🤯",
     pdfUrl: "/sample.pdf", 
     hashtags: ["QuantumPhysics", "Learning", "Science"],
@@ -39,13 +45,33 @@ const samplePosts: Post[] = [
   },
    {
     id: "4",
-    author: { name: "Diana Prince", avatarUrl: "https://placehold.co/40x40.png?text=DP", college: "Caltech" },
+    author: { name: "Diana Prince", avatarUrl: "https://placehold.co/40x40.png?text=DP", college: "Caltech", collegeId: "caltech" },
     content: "Our robotics club just won the national competition! So proud of the team. Here's a short video of our winning run.",
     videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4", 
     hashtags: ["Robotics", "Competition", "CaltechChamps"],
     timestamp: "2d ago",
     likes: 250,
     comments: 30,
+  },
+  {
+    id: "5",
+    author: { name: "Eve Stanfordian", avatarUrl: "https://placehold.co/40x40.png?text=ES", college: "Stanford University", collegeId: "stanford" },
+    content: "Anyone going to the guest lecture on AI ethics tomorrow? #StanfordAI #EthicsInTech",
+    hashtags: ["StanfordAI", "EthicsInTech"],
+    timestamp: "6h ago",
+    likes: 90,
+    comments: 10,
+  },
+  {
+    id: "6",
+    author: { name: "Frank MITian", avatarUrl: "https://placehold.co/40x40.png?text=FM", college: "MIT", collegeId: "mit" },
+    content: "HackMIT registration is open! Let's form a team. #HackMIT #Innovation",
+    hashtags: ["HackMIT", "Innovation"],
+    timestamp: "10h ago",
+    likes: 110,
+    comments: 22,
+    imageUrl: "https://placehold.co/600x300.png?text=Hackathon",
+    dataAiHint: "hackathon code",
   },
 ];
 
@@ -57,8 +83,9 @@ const sampleCommunities: Community[] = [
     description: "Share coding projects, hackathon news, and tech discussions.",
     memberCount: 750,
     imageUrl: "https://placehold.co/400x200.png?text=Hackers",
+    dataAiHint: "code computer",
     tags: ["coding", "technology", "hackathons"],
-    slug: "campus-hackers",
+    slug: "campus-hackers", // This slug would ideally point to a generic community, not a college one.
   },
   {
     id: "c2",
@@ -66,6 +93,7 @@ const sampleCommunities: Community[] = [
     description: "Engage in thoughtful debates and discussions on various topics.",
     memberCount: 220,
     imageUrl: "https://placehold.co/400x200.png?text=Debate",
+    dataAiHint: "discussion debate",
     tags: ["debate", "discussion", "publicspeaking"],
     slug: "debate-club",
   },
@@ -76,13 +104,58 @@ const sampleCommunities: Community[] = [
     memberCount: 410,
     tags: ["art", "design", "creative"],
     slug: "art-design-collective",
+    // No image for this one, will use gradient
   },
 ];
 
 
 export default function FeedPage() {
+  const [displayedPosts, setDisplayedPosts] = useState<Post[]>([]);
+  const [selectedCollegeId, setSelectedCollegeId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const collegeId = localStorage.getItem('selectedCollegeId');
+      setSelectedCollegeId(collegeId);
+      if (collegeId) {
+        const filteredPosts = allSamplePosts.filter(post => post.author.collegeId === collegeId);
+        setDisplayedPosts(filteredPosts);
+      } else {
+        // If no college is selected, show no posts or prompt to select
+        setDisplayedPosts([]);
+      }
+      setIsLoading(false);
+    }
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="spinner">
+          {[...Array(6)].map((_, i) => <div key={i}></div>)}
+        </div>
+      </div>
+    );
+  }
+
+  if (!selectedCollegeId) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full text-center p-4 md:p-6">
+        <School className="h-16 w-16 text-primary mb-4" />
+        <h2 className="text-2xl font-semibold mb-2">No College Selected</h2>
+        <p className="text-muted-foreground mb-4">
+          Please select your college to see relevant posts.
+        </p>
+        <Button asChild>
+          <Link href="/select-college">Select Your College</Link>
+        </Button>
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-6"> {/* Removed p-4 md:p-6 for parent padding */}
+    <div className="space-y-6 p-4 md:p-6">
       <Tabs defaultValue="campus" className="w-full">
         <div className="flex justify-center mb-6">
           <TabsList className="grid w-full max-w-md grid-cols-2">
@@ -94,9 +167,19 @@ export default function FeedPage() {
         <TabsContent value="campus">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start max-w-6xl mx-auto">
             <div className="lg:col-span-2 space-y-6">
-              {samplePosts.map((post) => (
-                <PostCard key={post.id} post={post} />
-              ))}
+              {displayedPosts.length > 0 ? (
+                displayedPosts.map((post) => (
+                  <PostCard key={post.id} post={post} />
+                ))
+              ) : (
+                <Card>
+                  <CardContent className="h-64 flex flex-col items-center justify-center text-center text-muted-foreground p-6">
+                     <Users className="h-12 w-12 mb-4 opacity-50" />
+                    <h3 className="text-xl font-semibold">No Posts Yet</h3>
+                    <p>There are no posts for your selected college yet. Be the first to share!</p>
+                  </CardContent>
+                </Card>
+              )}
             </div>
             <aside className="lg:col-span-1 space-y-6 sticky top-20">
               <div className="bg-card p-4 rounded-xl shadow">
@@ -132,12 +215,12 @@ export default function FeedPage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {sampleCommunities.map((community) => (
-                <CommunityCard key={community.id} community={community} />
+                  <CommunityCard key={community.id} community={community} />
                 ))}
             </div>
             {sampleCommunities.length === 0 && (
                 <Card>
-                    <CardContent className="h-64 flex flex-col items-center justify-center text-center text-muted-foreground">
+                    <CardContent className="h-64 flex flex-col items-center justify-center text-center text-muted-foreground p-6">
                         <Users className="h-12 w-12 mb-4" />
                         <h3 className="text-xl font-semibold">No Communities Yet</h3>
                         <p>Explore communities or create your own!</p>
