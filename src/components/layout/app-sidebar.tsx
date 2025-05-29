@@ -19,11 +19,10 @@ import { Home, MessageSquare, Settings, LogOut, HelpCircle, UserCircle, Search a
 import { useSearch } from "@/contexts/SearchContext"; 
 
 const mainNavItems = [
-  { id: "home", label: "Home", icon: Home, tooltip: "Home Feed", href: "/feed" },
-  // Discover was removed, Search UI is now integrated
+  // Home is now handled separately
   { id: "messages", label: "Messages", icon: MessageSquare, tooltip: "Messages", href: "/messages" },
-  { id: "notifications", label: "Notifications", icon: Bell, tooltip: "Notifications", href: "/notifications" }, // Placeholder href
-  { id: "create-post", label: "Create", icon: PlusSquare, tooltip: "Create Post", href: "/create-post" }, // Placeholder href
+  { id: "notifications", label: "Notifications", icon: Bell, tooltip: "Notifications", href: "/notifications" },
+  { id: "create-post", label: "Create", icon: PlusSquare, tooltip: "Create Post", href: "/create-post" },
 ];
 
 const bottomNavItems = [
@@ -31,6 +30,8 @@ const bottomNavItems = [
   { id: "settings", label: "Settings", icon: Settings, tooltip: "Settings", href: "/settings" },
   { id: "help", label: "Help", icon: HelpCircle, tooltip: "Help Center", href: "/help" },
 ];
+
+const homeNavItem = { id: "home", label: "Home", icon: Home, tooltip: "Home Feed", href: "/feed" };
 
 export function AppSidebar() {
   const pathname = usePathname();
@@ -46,13 +47,11 @@ export function AppSidebar() {
   };
   
   React.useEffect(() => {
-    // If the path changes (e.g. browser back/forward) while search is active, deactivate search.
-    // Navigating via sidebar links already handles this in their onClick.
     if (isSearchActive) {
       setIsSearchActive(false);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname]); // Only run when pathname changes
+  }, [pathname]);
 
 
   return (
@@ -65,6 +64,25 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent className="flex-1 p-2">
         <SidebarMenu>
+          {/* Home Button Item */}
+          <SidebarMenuItem key={homeNavItem.id}>
+            <SidebarMenuButton
+              asChild
+              isActive={!isSearchActive && (pathname === homeNavItem.href || (homeNavItem.href === "/feed" && pathname === "/"))}
+              onClick={() => setIsSearchActive(false)} 
+              tooltip={{ children: homeNavItem.tooltip, className: "bg-sidebar-accent text-sidebar-accent-foreground" }}
+              className={cn(
+                "data-[active=true]:bg-sidebar-primary data-[active=true]:text-sidebar-primary-foreground data-[active=true]:hover:bg-sidebar-primary/90",
+                "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+              )}
+            >
+              <Link href={homeNavItem.href}>
+                <homeNavItem.icon />
+                <span>{homeNavItem.label}</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+
           {/* Search Button Item */}
           <SidebarMenuItem key="search-ui-trigger">
             <SidebarMenuButton
@@ -84,7 +102,7 @@ export function AppSidebar() {
             <SidebarMenuItem key={item.id}>
               <SidebarMenuButton
                 asChild
-                isActive={!isSearchActive && (pathname === item.href || (item.href !== "/" && item.href !== "/feed" && pathname.startsWith(item.href)) || (item.href === "/feed" && (pathname === "/" || pathname === "/feed")))}
+                isActive={!isSearchActive && (pathname === item.href || (item.href !== "/" && item.href !== "/feed" && pathname.startsWith(item.href)))}
                 onClick={() => setIsSearchActive(false)} 
                 tooltip={{ children: item.tooltip, className: "bg-sidebar-accent text-sidebar-accent-foreground" }}
                 className={cn(
