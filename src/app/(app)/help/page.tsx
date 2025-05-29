@@ -1,3 +1,4 @@
+
 import {
   Accordion,
   AccordionContent,
@@ -7,7 +8,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { HelpCircle, LifeBuoy, Search, MessageSquareQuestion } from "lucide-react";
+import { HelpCircle, LifeBuoy, Search, MessageSquareQuote } from "lucide-react";
 
 const faqs = [
   {
@@ -47,7 +48,7 @@ export default function HelpPage() {
         <CardHeader>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            <Input placeholder="Search help topics..." className="pl-10 text-base py-6" />
+            <Input placeholder="Search help topics..." className="pl-10 text-base py-6" suppressHydrationWarning={true} />
           </div>
         </CardHeader>
       </Card>
@@ -55,7 +56,7 @@ export default function HelpPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <MessageSquareQuestion className="h-6 w-6" /> Frequently Asked Questions
+            <MessageSquareQuote className="h-6 w-6" /> Frequently Asked Questions
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -84,7 +85,7 @@ export default function HelpPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="text-center">
-          <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
+          <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground" suppressHydrationWarning={true}>
             Contact Support
           </Button>
           <p className="text-xs text-muted-foreground mt-3">
