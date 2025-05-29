@@ -28,16 +28,16 @@ export default function SettingsPage() {
               <AvatarImage src="https://placehold.co/80x80.png?text=AJ" alt="User Avatar" data-ai-hint="user avatar" />
               <AvatarFallback>AJ</AvatarFallback>
             </Avatar>
-            <Button variant="outline">Change Avatar</Button>
+            <Button variant="outline" suppressHydrationWarning={true}>Change Avatar</Button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="fullName">Full Name</Label>
-              <Input id="fullName" defaultValue="Alex Johnson" />
+              <Input id="fullName" defaultValue="Alex Johnson" suppressHydrationWarning={true} />
             </div>
             <div>
               <Label htmlFor="username">Username</Label>
-              <Input id="username" defaultValue="alexj" />
+              <Input id="username" defaultValue="alexj" suppressHydrationWarning={true} />
             </div>
           </div>
           <div>
@@ -47,9 +47,10 @@ export default function SettingsPage() {
               rows={3}
               className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               defaultValue="Passionate about AI and web development."
+              suppressHydrationWarning={true}
             />
           </div>
-          <Button>Save Profile Changes</Button>
+          <Button suppressHydrationWarning={true}>Save Profile Changes</Button>
         </CardContent>
       </Card>
 
@@ -62,10 +63,10 @@ export default function SettingsPage() {
         <CardContent className="space-y-6"> {/* Changed from space-y-4 */}
           <div>
             <Label htmlFor="email">Email Address</Label>
-            <Input id="email" type="email" defaultValue="alex.johnson@example.edu" disabled />
+            <Input id="email" type="email" defaultValue="alex.johnson@example.edu" disabled suppressHydrationWarning={true} />
           </div>
-          <Button variant="outline">Change Password</Button>
-          <Button variant="destructive">Deactivate Account</Button>
+          <Button variant="outline" suppressHydrationWarning={true}>Change Password</Button>
+          <Button variant="destructive" suppressHydrationWarning={true}>Deactivate Account</Button>
         </CardContent>
       </Card>
 
@@ -81,7 +82,7 @@ export default function SettingsPage() {
               <Label htmlFor="newPostNotifs">New Posts in Your Communities</Label>
               <p className="text-xs text-muted-foreground mt-1">Get notified about new posts in communities you've joined.</p>
             </div>
-            <Switch id="newPostNotifs" defaultChecked />
+            <Switch id="newPostNotifs" defaultChecked suppressHydrationWarning={true} />
           </div>
           <Separator />
           <div className="flex items-center justify-between">
@@ -89,7 +90,7 @@ export default function SettingsPage() {
               <Label htmlFor="messageNotifs">Direct Messages</Label>
                <p className="text-xs text-muted-foreground mt-1">Receive notifications for new direct messages.</p>
             </div>
-            <Switch id="messageNotifs" defaultChecked />
+            <Switch id="messageNotifs" defaultChecked suppressHydrationWarning={true} />
           </div>
           <Separator />
            <div className="flex items-center justify-between">
@@ -97,9 +98,9 @@ export default function SettingsPage() {
               <Label htmlFor="mentionNotifs">Mentions</Label>
               <p className="text-xs text-muted-foreground mt-1">Notify me when someone mentions me.</p>
             </div>
-            <Switch id="mentionNotifs" />
+            <Switch id="mentionNotifs" suppressHydrationWarning={true} />
           </div>
-          <Button>Save Notification Preferences</Button>
+          <Button suppressHydrationWarning={true}>Save Notification Preferences</Button>
         </CardContent>
       </Card>
       
@@ -115,7 +116,7 @@ export default function SettingsPage() {
               <Label htmlFor="darkModeToggle">Dark Mode</Label>
               <p className="text-xs text-muted-foreground mt-1">Toggle between light and dark themes.</p>
             </div>
-            <Switch id="darkModeToggle" defaultChecked disabled /> 
+            <Switch id="darkModeToggle" defaultChecked disabled suppressHydrationWarning={true} /> 
             {/* Actual theme toggling requires more setup (context, cookie/localStorage) */}
           </div>
            <p className="text-xs text-muted-foreground mt-3">More appearance settings coming soon!</p>
@@ -135,7 +136,7 @@ export default function SettingsPage() {
               <p className="text-xs text-muted-foreground mt-1">Control who can see your profile (within your college).</p>
             </div>
             {/* This would likely be a select: "Everyone in college", "Connections only" (if that feature exists) */}
-            <Switch id="profileVisibility" defaultChecked disabled />
+            <Switch id="profileVisibility" defaultChecked disabled suppressHydrationWarning={true} />
           </div>
            <p className="text-xs text-muted-foreground mt-3">More privacy settings coming soon!</p>
         </CardContent>
