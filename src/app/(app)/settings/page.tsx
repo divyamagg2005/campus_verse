@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -58,7 +59,7 @@ export default function SettingsPage() {
           <CardTitle className="flex items-center gap-2"><Lock className="h-5 w-5" /> Account Settings</CardTitle>
           <CardDescription>Manage your email, password, and account security.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6"> {/* Changed from space-y-4 */}
           <div>
             <Label htmlFor="email">Email Address</Label>
             <Input id="email" type="email" defaultValue="alex.johnson@example.edu" disabled />
@@ -74,11 +75,11 @@ export default function SettingsPage() {
           <CardTitle className="flex items-center gap-2"><Bell className="h-5 w-5" /> Notification Settings</CardTitle>
           <CardDescription>Control how you receive notifications.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6"> {/* Changed from space-y-4 */}
           <div className="flex items-center justify-between">
             <div>
               <Label htmlFor="newPostNotifs">New Posts in Your Communities</Label>
-              <p className="text-xs text-muted-foreground">Get notified about new posts in communities you've joined.</p>
+              <p className="text-xs text-muted-foreground mt-1">Get notified about new posts in communities you've joined.</p>
             </div>
             <Switch id="newPostNotifs" defaultChecked />
           </div>
@@ -86,7 +87,7 @@ export default function SettingsPage() {
           <div className="flex items-center justify-between">
             <div>
               <Label htmlFor="messageNotifs">Direct Messages</Label>
-               <p className="text-xs text-muted-foreground">Receive notifications for new direct messages.</p>
+               <p className="text-xs text-muted-foreground mt-1">Receive notifications for new direct messages.</p>
             </div>
             <Switch id="messageNotifs" defaultChecked />
           </div>
@@ -94,7 +95,7 @@ export default function SettingsPage() {
            <div className="flex items-center justify-between">
             <div>
               <Label htmlFor="mentionNotifs">Mentions</Label>
-              <p className="text-xs text-muted-foreground">Notify me when someone mentions me.</p>
+              <p className="text-xs text-muted-foreground mt-1">Notify me when someone mentions me.</p>
             </div>
             <Switch id="mentionNotifs" />
           </div>
@@ -112,12 +113,12 @@ export default function SettingsPage() {
            <div className="flex items-center justify-between">
             <div>
               <Label htmlFor="darkModeToggle">Dark Mode</Label>
-              <p className="text-xs text-muted-foreground">Toggle between light and dark themes.</p>
+              <p className="text-xs text-muted-foreground mt-1">Toggle between light and dark themes.</p>
             </div>
             <Switch id="darkModeToggle" defaultChecked disabled /> 
             {/* Actual theme toggling requires more setup (context, cookie/localStorage) */}
           </div>
-           <p className="text-xs text-muted-foreground">More appearance settings coming soon!</p>
+           <p className="text-xs text-muted-foreground mt-3">More appearance settings coming soon!</p>
         </CardContent>
       </Card>
 
@@ -131,12 +132,12 @@ export default function SettingsPage() {
            <div className="flex items-center justify-between">
             <div>
               <Label htmlFor="profileVisibility">Profile Visibility</Label>
-              <p className="text-xs text-muted-foreground">Control who can see your profile (within your college).</p>
+              <p className="text-xs text-muted-foreground mt-1">Control who can see your profile (within your college).</p>
             </div>
             {/* This would likely be a select: "Everyone in college", "Connections only" (if that feature exists) */}
             <Switch id="profileVisibility" defaultChecked disabled />
           </div>
-           <p className="text-xs text-muted-foreground">More privacy settings coming soon!</p>
+           <p className="text-xs text-muted-foreground mt-3">More privacy settings coming soon!</p>
         </CardContent>
       </Card>
     </div>
