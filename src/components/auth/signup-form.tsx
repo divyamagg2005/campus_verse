@@ -58,14 +58,14 @@ export function SignupForm() {
     // Simulate API call for signup
     console.log("Signup submitted", values);
     // In a real app, you'd handle user creation, email verification, and then redirect
-    router.push("/discover"); 
+    router.push("/feed"); 
   }
 
   return (
     <Card className="w-full max-w-md shadow-2xl">
       <CardHeader className="text-center">
         <CardTitle className="text-3xl font-bold">Create Account</CardTitle>
-        <CardDescription>Join CampusConnect and start connecting.</CardDescription>
+        <CardDescription>Join Campusverse and start connecting.</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>

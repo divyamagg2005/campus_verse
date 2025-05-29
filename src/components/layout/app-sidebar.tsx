@@ -15,13 +15,11 @@ import {
   SidebarFooter,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
-import { Home, MessageSquare, Settings, LogOut, HelpCircle, UserCircle, Search as SearchIcon, Bell, PlusSquare, Compass } from "lucide-react"; // Renamed Search to SearchIcon
+import { Home, MessageSquare, Settings, LogOut, HelpCircle, UserCircle, Search as SearchIcon, Bell, PlusSquare } from "lucide-react"; // Renamed Search to SearchIcon
 import { useSearch } from "@/contexts/SearchContext"; // Import useSearch
 
 const mainNavItems = [
   { id: "home", label: "Home", icon: Home, tooltip: "Home Feed", href: "/feed" },
-  // The "Search" item will now be a button to activate search UI
-  // { id: "discover", label: "Discover", icon: Compass, tooltip: "Discover", href: "/discover"}, // Optional: Keep discover as a separate page
   { id: "messages", label: "Messages", icon: MessageSquare, tooltip: "Messages", href: "/messages" },
   { id: "notifications", label: "Notifications", icon: Bell, tooltip: "Notifications", href: "/notifications" },
   { id: "create-post", label: "Create", icon: PlusSquare, tooltip: "Create Post", href: "/create-post" },
@@ -83,25 +81,6 @@ export function AppSidebar() {
               <span>Search</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
-
-           {/* Discover Item - if you want to keep it separate */}
-           <SidebarMenuItem key="discover">
-              <SidebarMenuButton
-                asChild
-                isActive={pathname === "/discover"}
-                onClick={() => setIsSearchActive(false)}
-                tooltip={{ children: "Discover", className: "bg-sidebar-accent text-sidebar-accent-foreground" }}
-                className={cn(
-                  "data-[active=true]:bg-sidebar-primary data-[active=true]:text-sidebar-primary-foreground data-[active=true]:hover:bg-sidebar-primary/90",
-                  "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                )}
-              >
-                <Link href="/discover">
-                  <Compass />
-                  <span>Discover</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
 
           {mainNavItems.map((item) => (
             <SidebarMenuItem key={item.id}>
