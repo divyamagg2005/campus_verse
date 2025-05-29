@@ -12,61 +12,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import { Bell, LogOut, Search as SearchIcon, Settings, UserCircle } from "lucide-react"; // Renamed Search to SearchIcon
+import { LogOut, Settings, UserCircle } from "lucide-react";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
-import { useSearch } from "@/contexts/SearchContext"; // Import useSearch
+// Removed useSearch as the input is being removed from header
+// Removed SearchIcon and Bell from lucide-react imports
 
 export function AppHeader() {
   const { isMobile } = useSidebar();
-  const { searchQuery, setSearchQuery, setIsSearchActive } = useSearch(); // Use SearchContext
-
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const query = event.target.value;
-    setSearchQuery(query);
-    if (query.trim() !== "") {
-      setIsSearchActive(true);
-    }
-    // If query is empty, search can remain active to show suggestions or empty state handled by SearchResultsDisplay
-    // Or setIsSearchActive(false) if you want to hide results immediately on empty.
-    // For now, let SearchResultsDisplay handle empty query state while active.
-  };
-
-  const handleSearchFocus = () => {
-    setIsSearchActive(true);
-  };
-
-  const handleSearchBlur = () => {
-    // If we want to automatically close search on blur when query is empty:
-    // if (searchQuery.trim() === "") {
-    //   setIsSearchActive(false);
-    // }
-  };
+  // Removed search related state and handlers as the input is being removed
 
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-md sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
       {isMobile && <SidebarTrigger />}
-      <div className="relative flex-1 md:grow-0">
-        <SearchIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          id="global-search-input" // Added an ID for potential programmatic focus
-          type="search"
-          placeholder="Search Campusverse..."
-          className="w-full rounded-lg bg-background pl-8 md:w-[280px] lg:w-[320px]"
-          value={searchQuery}
-          onChange={handleSearchChange}
-          onFocus={handleSearchFocus}
-          onBlur={handleSearchBlur}
-          suppressHydrationWarning
-        />
-      </div>
+      {/* Search input div removed */}
       <div className="flex items-center gap-4 ml-auto">
-        <Button variant="ghost" size="icon" className="rounded-full" asChild>
-          <Link href="/notifications">
-            <Bell className="h-5 w-5" />
-            <span className="sr-only">Notifications</span>
-          </Link>
-        </Button>
+        {/* Notification Bell Button removed */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="rounded-full overflow-hidden w-8 h-8">
