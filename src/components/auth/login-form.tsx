@@ -39,9 +39,9 @@ export function LoginForm() {
   function onSubmit(values: LoginFormValues) {
     // Simulate API call
     console.log("Login submitted", values);
-    // Redirect to dashboard on successful login
+    // Redirect to discover page on successful login
     // In a real app, you'd handle auth state and redirect based on it
-    router.push("/"); 
+    router.push("/discover"); 
   }
 
   return (

@@ -58,7 +58,7 @@ export function SignupForm() {
     // Simulate API call for signup
     console.log("Signup submitted", values);
     // In a real app, you'd handle user creation, email verification, and then redirect
-    router.push("/"); 
+    router.push("/discover"); 
   }
 
   return (
