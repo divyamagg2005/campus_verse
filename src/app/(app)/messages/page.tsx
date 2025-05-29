@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Search, Send, Smile, Paperclip, Phone, Video, PlusCircle, MessageSquare, ChevronLeft } from "lucide-react";
 import { cn } from '@/lib/utils';
-import { useIsMobile } from '@/hooks/use-mobile'; // Import useIsMobile
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface User {
   id: string;
@@ -65,12 +65,12 @@ export default function MessagesPage() {
   const isMobile = useIsMobile();
   const [showChatMobile, setShowChatMobile] = useState(false);
 
-  // Initialize selectedUser to the first user on desktop only
+  // Initialize selectedUser to the first user on desktop if no user is already selected
   useEffect(() => {
-    if (!isMobile && dummyUsers.length > 0) {
+    if (isMobile === false && dummyUsers.length > 0 && !selectedUser) {
       setSelectedUser(dummyUsers[0]);
     }
-  }, [isMobile]);
+  }, [isMobile, selectedUser]);
 
 
   const filteredUsers = dummyUsers.filter(user => 
@@ -102,7 +102,7 @@ export default function MessagesPage() {
 
   const handleBackToListMobile = () => {
     setShowChatMobile(false);
-    setSelectedUser(null); // Optionally clear selected user when going back on mobile
+    // setSelectedUser(null); // Keep user selected for smoother transition if they re-open
   }
 
   useEffect(() => {
@@ -117,10 +117,20 @@ export default function MessagesPage() {
     }
   }, [selectedUser]);
 
+  if (isMobile === undefined) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="spinner">
+          {[...Array(6)].map((_, i) => <div key={i}></div>)}
+        </div>
+      </div>
+    );
+  }
+
   const UserListAside = () => (
     <aside className={cn(
       "border-border flex flex-col bg-card",
-      isMobile ? "w-full h-full" : "w-1/3 min-w-[280px] max-w-[380px] border-r"
+      isMobile && !showChatMobile ? "w-full h-full" : "w-1/3 min-w-[280px] max-w-[380px] border-r"
     )}>
       <div className="p-3 border-b border-border sticky top-0 bg-card z-10">
           <div className="flex items-center justify-between mb-2">
@@ -147,7 +157,7 @@ export default function MessagesPage() {
               key={user.id}
               className={cn(
                 "w-full flex items-center gap-3 text-left py-2 px-3 rounded-md hover:bg-muted focus-visible:bg-muted outline-none transition-colors duration-150",
-                selectedUser?.id === user.id && !isMobile && "bg-primary text-primary-foreground hover:bg-primary/90"
+                selectedUser?.id === user.id && (!isMobile || showChatMobile) && "bg-primary text-primary-foreground hover:bg-primary/90"
               )}
               onClick={() => handleSelectUser(user)}
               suppressHydrationWarning={true}
@@ -160,14 +170,14 @@ export default function MessagesPage() {
               <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-center">
                   <p className="text-sm font-medium truncate">{user.name}</p>
-                  <span className={cn("text-xs flex-shrink-0 ml-2", selectedUser?.id === user.id && !isMobile ? 'text-primary-foreground/70' : 'text-muted-foreground')}>{user.lastMessageTime}</span>
+                  <span className={cn("text-xs flex-shrink-0 ml-2", selectedUser?.id === user.id && (!isMobile || showChatMobile) ? 'text-primary-foreground/70' : 'text-muted-foreground')}>{user.lastMessageTime}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <p className={cn("text-xs truncate mt-0.5", selectedUser?.id === user.id && !isMobile ? 'text-primary-foreground/70' : 'text-muted-foreground')}>{user.lastMessage}</p>
+                  <p className={cn("text-xs truncate mt-0.5", selectedUser?.id === user.id && (!isMobile || showChatMobile) ? 'text-primary-foreground/70' : 'text-muted-foreground')}>{user.lastMessage}</p>
                   {user.unreadCount && user.unreadCount > 0 && (
                     <span className={cn(
                       "ml-2 text-xs rounded-full px-1.5 py-0.5 font-medium",
-                      selectedUser?.id === user.id && !isMobile ? "bg-primary-foreground text-primary" : "bg-primary text-primary-foreground"
+                      selectedUser?.id === user.id && (!isMobile || showChatMobile) ? "bg-primary-foreground text-primary" : "bg-primary text-primary-foreground"
                     )}>
                       {user.unreadCount}
                     </span>
@@ -185,13 +195,13 @@ export default function MessagesPage() {
   );
 
   const ChatMain = () => (
-    <main className="flex-1 flex flex-col bg-background">
+    <main className={cn("flex-1 flex flex-col bg-background", isMobile && !showChatMobile && "hidden")}>
       {selectedUser ? (
         <>
           <header className="p-4 border-b border-border flex items-center justify-between bg-card sticky top-0 z-10">
             <div className="flex items-center gap-3">
               {isMobile && (
-                <Button variant="ghost" size="icon" onClick={handleBackToListMobile} className="mr-2 text-muted-foreground hover:text-primary">
+                <Button variant="ghost" size="icon" onClick={handleBackToListMobile} className="mr-2 text-muted-foreground hover:text-primary" suppressHydrationWarning={true}>
                   <ChevronLeft className="h-6 w-6" />
                 </Button>
               )}
@@ -276,11 +286,13 @@ export default function MessagesPage() {
           </footer>
         </>
       ) : (
-        <div className="flex-1 flex flex-col items-center justify-center text-center text-muted-foreground p-8">
-          <MessageSquare className="h-16 w-16 mb-4 opacity-50" />
-          <h2 className="text-xl font-semibold">No chat selected</h2>
-          <p className="max-w-xs">Select a conversation from the list on the left, or start a new one to begin messaging.</p>
-        </div>
+        !isMobile && ( // Only show "No chat selected" on desktop if no user is selected
+          <div className="flex-1 flex flex-col items-center justify-center text-center text-muted-foreground p-8">
+            <MessageSquare className="h-16 w-16 mb-4 opacity-50" />
+            <h2 className="text-xl font-semibold">No chat selected</h2>
+            <p className="max-w-xs">Select a conversation from the list on the left, or start a new one to begin messaging.</p>
+          </div>
+        )
       )}
     </main>
   );
@@ -289,7 +301,10 @@ export default function MessagesPage() {
   return (
     <div className="flex flex-col md:flex-row h-full border rounded-xl overflow-hidden shadow-xl">
       {isMobile ? (
-        showChatMobile && selectedUser ? <ChatMain /> : <UserListAside />
+        <>
+          {showChatMobile && selectedUser ? null : <UserListAside />}
+          {showChatMobile && selectedUser ? <ChatMain /> : null}
+        </>
       ) : (
         <>
           <UserListAside />
