@@ -83,7 +83,7 @@ export default function DiscoverPage() {
         <Compass className="h-8 w-8 text-primary" />
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Discover</h1>
-          <p className="text-muted-foreground">Find new posts, communities, and people on CampusConnect.</p>
+          <p className="text-muted-foreground">Find new posts, communities, and people on Campusverse.</p>
         </div>
       </div>
 

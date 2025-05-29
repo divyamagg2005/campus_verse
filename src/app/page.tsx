@@ -10,7 +10,7 @@ export default function LandingPage() {
           <Icons.Logo className="h-24 w-24 text-primary" />
         </div>
         <h1 className="text-5xl font-bold tracking-tight">
-          Welcome to <span className="text-primary">CampusConnect</span>
+          Welcome to <span className="text-primary">Campusverse</span>
         </h1>
         <p className="text-xl text-muted-foreground">
           The exclusive social platform for your college. Share, connect, and build communities with your peers.
@@ -25,7 +25,7 @@ export default function LandingPage() {
         </div>
       </div>
       <footer className="absolute bottom-8 text-sm text-muted-foreground">
-        &copy; {new Date().getFullYear()} CampusConnect. All rights reserved.
+        &copy; {new Date().getFullYear()} Campusverse. All rights reserved.
       </footer>
     </main>
   );

@@ -24,7 +24,7 @@ const faqs = [
   },
   {
     question: "How is my college workspace determined?",
-    answer: "When you sign up, you select your college and verify with your college email address. This places you into your specific college's private CampusConnect workspace.",
+    answer: "When you sign up, you select your college and verify with your college email address. This places you into your specific college's private Campusverse workspace.",
   },
   {
     question: "Can I change my profile information?",
@@ -39,7 +39,7 @@ export default function HelpPage() {
         <HelpCircle className="h-16 w-16 text-primary mx-auto mb-4" />
         <h1 className="text-4xl font-bold tracking-tight">Help Center</h1>
         <p className="text-muted-foreground mt-2">
-          Find answers to your questions about CampusConnect.
+          Find answers to your questions about Campusverse.
         </p>
       </div>
 

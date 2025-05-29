@@ -39,7 +39,7 @@ export function AppSidebar() {
       <SidebarHeader className="p-4 border-b border-sidebar-border">
         <Link href="/" className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center">
           <Icons.Logo className="h-8 w-8 text-primary" />
-          <span className="font-semibold text-lg group-data-[collapsible=icon]:hidden">CampusConnect</span>
+          <span className="font-semibold text-lg group-data-[collapsible=icon]:hidden">Campusverse</span>
         </Link>
       </SidebarHeader>
       <SidebarContent className="flex-1 p-2">

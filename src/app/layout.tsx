@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'CampusConnect',
+  title: 'Campusverse',
   description: 'Your college social network.',
 };
 
