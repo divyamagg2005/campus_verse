@@ -20,6 +20,7 @@ import { useSearch } from "@/contexts/SearchContext";
 
 const mainNavItems = [
   // Home is now handled separately
+  // Search is now handled separately
   { id: "messages", label: "Messages", icon: MessageSquare, tooltip: "Messages", href: "/messages" },
   { id: "notifications", label: "Notifications", icon: Bell, tooltip: "Notifications", href: "/notifications" },
   { id: "create-post", label: "Create", icon: PlusSquare, tooltip: "Create Post", href: "/create-post" },
@@ -47,8 +48,11 @@ export function AppSidebar() {
   };
   
   React.useEffect(() => {
-    if (isSearchActive) {
-      setIsSearchActive(false);
+    if (isSearchActive && pathname !== '/search') { // Keep search active if on actual search page, otherwise deactivate on nav
+      const isNavigatingToSearchPage = pathname === '/search'; // Example, adjust if your search results are not on a dedicated page
+      if (!isNavigatingToSearchPage) {
+          setIsSearchActive(false);
+      }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
@@ -57,7 +61,7 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon" variant="sidebar" side="left">
       <SidebarHeader className="p-4 border-b border-sidebar-border">
-        <Link href="/feed" className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center" onClick={() => setIsSearchActive(false)}>
+        <Link href="/" className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center" onClick={() => setIsSearchActive(false)}>
           <Icons.Logo className="h-8 w-8 text-primary" />
           <span className="font-semibold text-lg group-data-[collapsible=icon]:hidden">Campusverse</span>
         </Link>
@@ -75,6 +79,7 @@ export function AppSidebar() {
                 "data-[active=true]:bg-sidebar-primary data-[active=true]:text-sidebar-primary-foreground data-[active=true]:hover:bg-sidebar-primary/90",
                 "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
               )}
+              suppressHydrationWarning={true}
             >
               <Link href={homeNavItem.href}>
                 <homeNavItem.icon />
@@ -92,6 +97,7 @@ export function AppSidebar() {
                 "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                 isSearchActive && "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90" 
               )}
+              suppressHydrationWarning={true}
             >
               <SearchIcon />
               <span>Search</span>
@@ -109,6 +115,7 @@ export function AppSidebar() {
                   "data-[active=true]:bg-sidebar-primary data-[active=true]:text-sidebar-primary-foreground data-[active=true]:hover:bg-sidebar-primary/90",
                   "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                 )}
+                suppressHydrationWarning={true}
               >
                 <Link href={item.href}>
                   <item.icon />
@@ -132,6 +139,7 @@ export function AppSidebar() {
                   "data-[active=true]:bg-sidebar-primary data-[active=true]:text-sidebar-primary-foreground data-[active=true]:hover:bg-sidebar-primary/90",
                   "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                 )}
+                suppressHydrationWarning={true}
               >
                 <Link href={item.href}>
                   <item.icon />
@@ -145,6 +153,7 @@ export function AppSidebar() {
               className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground" 
               tooltip={{ children: "Logout", className: "bg-sidebar-accent text-sidebar-accent-foreground" }}
               onClick={() => { setIsSearchActive(false); alert('Logout clicked!'); /* router.push('/login'); */ }}
+              suppressHydrationWarning={true}
             >
               <LogOut />
               <span>Logout</span>
