@@ -89,6 +89,7 @@ export default function MessagesPage() {
               className="pl-8"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              suppressHydrationWarning={true}
             />
           </div>
         </div>
@@ -103,6 +104,7 @@ export default function MessagesPage() {
                   selectedUser?.id === user.id && "bg-muted font-semibold"
                 )}
                 onClick={() => setSelectedUser(user)}
+                suppressHydrationWarning={true}
               >
                 <Avatar className="h-10 w-10 mr-3 relative">
                   <AvatarImage src={user.avatarUrl} alt={user.name} data-ai-hint="user avatar" />
@@ -136,8 +138,8 @@ export default function MessagesPage() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon"><Phone className="h-5 w-5" /></Button>
-                <Button variant="ghost" size="icon"><Video className="h-5 w-5" /></Button>
+                <Button variant="ghost" size="icon" suppressHydrationWarning={true}><Phone className="h-5 w-5" /></Button>
+                <Button variant="ghost" size="icon" suppressHydrationWarning={true}><Video className="h-5 w-5" /></Button>
               </div>
             </header>
             
@@ -175,16 +177,17 @@ export default function MessagesPage() {
 
             <footer className="p-4 border-t bg-card">
               <form onSubmit={handleSendMessage} className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" type="button"><Smile className="h-5 w-5" /></Button>
-                <Button variant="ghost" size="icon" type="button"><Paperclip className="h-5 w-5" /></Button>
+                <Button variant="ghost" size="icon" type="button" suppressHydrationWarning={true}><Smile className="h-5 w-5" /></Button>
+                <Button variant="ghost" size="icon" type="button" suppressHydrationWarning={true}><Paperclip className="h-5 w-5" /></Button>
                 <Input
                   placeholder="Type a message..."
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   className="flex-1"
                   autoComplete="off"
+                  suppressHydrationWarning={true}
                 />
-                <Button type="submit" size="icon" className="bg-primary text-primary-foreground hover:bg-primary/90">
+                <Button type="submit" size="icon" className="bg-primary text-primary-foreground hover:bg-primary/90" suppressHydrationWarning={true}>
                   <Send className="h-5 w-5" />
                 </Button>
               </form>
@@ -199,3 +202,5 @@ export default function MessagesPage() {
     </div>
   );
 }
+
+    
