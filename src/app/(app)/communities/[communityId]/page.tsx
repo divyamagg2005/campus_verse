@@ -11,6 +11,7 @@ import Image from "next/image";
 import { getCollegeById, type College } from '@/lib/colleges'; 
 import { Badge } from "@/components/ui/badge"; 
 import { useEffect, useState } from "react";
+import { useParams } from 'next/navigation'; // Import useParams
 
 interface CommunityDetails {
   id: string;
@@ -24,9 +25,9 @@ interface CommunityDetails {
 }
 
 // Function to generate dummy community details based on college
-const getCommunityDetails = (college?: College, communityId?: string): CommunityDetails => {
-  const collegeName = college ? college.name : communityId ? communityId.charAt(0).toUpperCase() + communityId.slice(1) : "Generic";
-  const collegeId = college ? college.id : communityId || "generic";
+const getCommunityDetails = (college?: College, communityIdString?: string): CommunityDetails => {
+  const collegeName = college ? college.name : communityIdString ? communityIdString.charAt(0).toUpperCase() + communityIdString.slice(1) : "Generic";
+  const collegeId = college ? college.id : communityIdString || "generic";
 
   return {
     id: collegeId,
@@ -41,23 +42,23 @@ const getCommunityDetails = (college?: College, communityId?: string): Community
 };
 
 // Dummy posts for THIS specific community page
-const generateCommunityPosts = (communityId: string): Post[] => [
+const generateCommunityPosts = (communityIdString: string): Post[] => [
   {
-    id: `comm-${communityId}-1`,
-    author: { name: "Community Member", avatarUrl: "https://placehold.co/40x40.png?text=CM", collegeId: communityId },
-    content: `Welcome to the ${communityId} community! Introduce yourself. #Welcome #${communityId}`,
-    hashtags: ["Welcome", communityId],
+    id: `comm-${communityIdString}-1`,
+    author: { name: "Community Member", avatarUrl: "https://placehold.co/40x40.png?text=CM", collegeId: communityIdString },
+    content: `Welcome to the ${communityIdString} community! Introduce yourself. #Welcome #${communityIdString}`,
+    hashtags: ["Welcome", communityIdString],
     timestamp: "1h ago",
     likes: 25,
     comments: 3,
-    imageUrl: `https://placehold.co/600x300.png?text=${communityId}+Event`,
+    imageUrl: `https://placehold.co/600x300.png?text=${communityIdString}+Event`,
     dataAiHint: "community event",
   },
   {
-    id: `comm-${communityId}-2`,
-    author: { name: "Event Organizer", avatarUrl: "https://placehold.co/40x40.png?text=EO", collegeId: communityId },
-    content: `Don't forget our weekly meetup this Friday at the main hall! #Meetup #${communityId}Events`,
-    hashtags: ["Meetup", `${communityId}Events`],
+    id: `comm-${communityIdString}-2`,
+    author: { name: "Event Organizer", avatarUrl: "https://placehold.co/40x40.png?text=EO", collegeId: communityIdString },
+    content: `Don't forget our weekly meetup this Friday at the main hall! #Meetup #${communityIdString}Events`,
+    hashtags: ["Meetup", `${communityIdString}Events`],
     timestamp: "5h ago",
     likes: 40,
     comments: 8,
@@ -65,18 +66,25 @@ const generateCommunityPosts = (communityId: string): Post[] => [
 ];
 
 
-export default function CommunityDetailPage({ params }: { params: { communityId: string } }) {
+export default function CommunityDetailPage() {
+  const routeParams = useParams<{ communityId: string }>();
+  const communityId = routeParams?.communityId;
+
   const [community, setCommunity] = useState<CommunityDetails | null>(null);
   const [communityPosts, setCommunityPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const college = getCollegeById(params.communityId);
-    const details = getCommunityDetails(college, params.communityId);
-    setCommunity(details);
-    setCommunityPosts(generateCommunityPosts(params.communityId));
-    setIsLoading(false);
-  }, [params.communityId]);
+    if (communityId) {
+      const college = getCollegeById(communityId);
+      const details = getCommunityDetails(college, communityId);
+      setCommunity(details);
+      setCommunityPosts(generateCommunityPosts(communityId));
+      setIsLoading(false);
+    } else {
+      setIsLoading(true); // Keep loading if communityId is not yet available
+    }
+  }, [communityId]);
 
   if (isLoading || !community) {
     return (
