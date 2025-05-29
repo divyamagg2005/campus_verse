@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Search, Send, Smile, Paperclip, Phone, Video, PlusCircle } from "lucide-react";
+import { Search, Send, Smile, Paperclip, Phone, Video, PlusCircle, MessageSquare } from "lucide-react";
 import { cn } from '@/lib/utils';
 
 interface User {
@@ -30,8 +30,8 @@ interface Message {
 const dummyUsers: User[] = [
   { id: "1", name: "Alice Wonderland", avatarUrl: "https://placehold.co/40x40.png?text=AW", lastMessage: "Hey, are you free for a quick chat?", lastMessageTime: "10:30 AM", online: true, unreadCount: 2 },
   { id: "2", name: "Bob The Builder", avatarUrl: "https://placehold.co/40x40.png?text=BB", lastMessage: "Sure, what's up?", lastMessageTime: "10:28 AM" },
-  { id: "3", name: "Charlie Brown", avatarUrl: "https://placehold.co/40x40.png?text=CB", lastMessage: "See you at the library! We need to discuss the project.", lastMessageTime: "Yesterday", unreadCount: 0 },
-  { id: "4", name: "Diana Prince", avatarUrl: "https://placehold.co/40x40.png?text=DP", lastMessage: "Thanks for the notes! They were super helpful.", lastMessageTime: "Mon", online: true },
+  { id: "3", name: "Charlie Brown", avatarUrl: "https://placehold.co/40x40.png?text=CB", lastMessage: "See you at the library! Project discussion.", lastMessageTime: "Yesterday", unreadCount: 0 },
+  { id: "4", name: "Diana Prince", avatarUrl: "https://placehold.co/40x40.png?text=DP", lastMessage: "Thanks for the notes! Super helpful.", lastMessageTime: "Mon", online: true },
   { id: "5", name: "Edward Scissorhands", avatarUrl: "https://placehold.co/40x40.png?text=ES", lastMessage: "Let's catch up soon.", lastMessageTime: "Sun" },
 ];
 
@@ -52,7 +52,6 @@ const dummyMessages: { [key: string]: Message[] } = {
     { id: "m3-1", senderId: "3", text: "See you at the library! We need to discuss the project.", timestamp: "Yesterday", isOwn: false },
     { id: "m3-2", senderId: "currentUser", text: "Okay, sounds good. I'll bring my notes.", timestamp: "Yesterday", isOwn: true },
   ],
-  // Add more message histories if needed
 };
 
 
@@ -71,7 +70,7 @@ export default function MessagesPage() {
     e.preventDefault();
     if (newMessage.trim() && selectedUser) {
       const newMsg: Message = {
-        id: `m${Date.now()}`, // More unique ID
+        id: `m${Date.now()}`,
         senderId: "currentUser", 
         text: newMessage,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -99,8 +98,8 @@ export default function MessagesPage() {
     <div className="flex h-full border rounded-xl overflow-hidden shadow-xl bg-card">
       {/* Sidebar with users list */}
       <aside className="w-1/3 min-w-[280px] max-w-[380px] border-r border-border flex flex-col">
-        <div className="p-4 border-b border-border sticky top-0 bg-card z-10">
-            <div className="flex items-center justify-between mb-3">
+        <div className="p-3 border-b border-border sticky top-0 bg-card z-10">
+            <div className="flex items-center justify-between mb-2">
                 <h2 className="text-xl font-semibold">Chats</h2>
                 <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary" suppressHydrationWarning={true}>
                     <PlusCircle className="h-5 w-5" />
@@ -109,8 +108,8 @@ export default function MessagesPage() {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input 
-              placeholder="Search chats or start new..." 
-              className="pl-10 rounded-full bg-background focus:bg-background"
+              placeholder="Search chats..." 
+              className="pl-10 rounded-md bg-background focus:bg-card" // Changed rounding and focus bg
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               suppressHydrationWarning={true}
@@ -118,24 +117,23 @@ export default function MessagesPage() {
           </div>
         </div>
         <ScrollArea className="flex-1">
-          <nav className="py-2">
+          <nav className="p-2 space-y-1"> {/* Added padding and space-y */}
             {filteredUsers.map((user) => (
               <button
                 key={user.id}
                 className={cn(
-                  "w-full flex items-center gap-3 text-left h-auto py-3.5 px-4 rounded-none hover:bg-muted/50 focus-visible:bg-muted/50 outline-none transition-colors duration-150",
-                  "border-l-4 border-transparent",
-                  selectedUser?.id === user.id && "bg-primary/10 border-primary"
+                  "w-full flex items-center gap-3 text-left py-2 px-3 rounded-md hover:bg-muted focus-visible:bg-muted outline-none transition-colors duration-150",
+                  selectedUser?.id === user.id && "bg-primary text-primary-foreground hover:bg-primary/90"
                 )}
                 onClick={() => setSelectedUser(user)}
                 suppressHydrationWarning={true}
               >
-                <Avatar className="h-11 w-11 relative">
+                <Avatar className="h-10 w-10 relative"> {/* Reduced avatar size */}
                   <AvatarImage src={user.avatarUrl} alt={user.name} data-ai-hint="user avatar" />
                   <AvatarFallback>{user.name.substring(0, 2).toUpperCase()}</AvatarFallback>
-                  {user.online && <span className="absolute bottom-0 right-0 block h-3 w-3 rounded-full bg-green-500 ring-2 ring-card" />}
+                  {user.online && <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-green-500 ring-2 ring-background" />} {/* ring-background */}
                 </Avatar>
-                <div className="flex-1 min-w-0"> {/* Added min-w-0 for proper truncation */}
+                <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-center">
                     <p className="text-sm font-medium truncate">{user.name}</p>
                     <span className="text-xs text-muted-foreground flex-shrink-0 ml-2">{user.lastMessageTime}</span>
@@ -143,7 +141,7 @@ export default function MessagesPage() {
                   <div className="flex justify-between items-center">
                     <p className="text-xs text-muted-foreground truncate mt-0.5">{user.lastMessage}</p>
                     {user.unreadCount && user.unreadCount > 0 && (
-                      <span className="ml-2 text-xs bg-primary text-primary-foreground rounded-full px-1.5 py-0.5 font-medium">
+                      <span className="ml-2 text-xs bg-primary-foreground/20 text-primary-foreground rounded-full px-1.5 py-0.5 font-medium"> {/* Adjusted unread badge for selected state */}
                         {user.unreadCount}
                       </span>
                     )}
@@ -152,7 +150,7 @@ export default function MessagesPage() {
               </button>
             ))}
              {filteredUsers.length === 0 && (
-                <p className="text-center text-muted-foreground p-4">No users found.</p>
+                <p className="text-center text-muted-foreground p-4 text-sm">No users found.</p>
             )}
           </nav>
         </ScrollArea>
@@ -198,7 +196,7 @@ export default function MessagesPage() {
                        <AvatarFallback>{selectedUser.name.substring(0, 2).toUpperCase()}</AvatarFallback>
                     </Avatar>
                   )}
-                   {msg.isOwn && ( // Placeholder for current user avatar if desired
+                   {msg.isOwn && (
                     <Avatar className="h-8 w-8 self-start flex-shrink-0">
                        <AvatarImage src="https://placehold.co/40x40.png?text=ME" alt="My Avatar" data-ai-hint="user avatar" />
                        <AvatarFallback>ME</AvatarFallback>
