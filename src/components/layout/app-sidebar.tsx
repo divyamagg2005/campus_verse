@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils";
 import { Home, MessageSquare, Settings, LogOut, HelpCircle, UserCircle, Search, Bell, PlusSquare } from "lucide-react";
 
 const navItems = [
-  { href: "/", label: "Home", icon: Home, tooltip: "Home" }, // This links to the user feed
+  { href: "/feed", label: "Home", icon: Home, tooltip: "Home" }, // This links to the user feed
   { href: "/discover", label: "Search", icon: Search, tooltip: "Search" },
   { href: "/messages", label: "Messages", icon: MessageSquare, tooltip: "Messages" },
   { href: "/notifications", label: "Notifications", icon: Bell, tooltip: "Notifications" }, 
@@ -37,7 +37,7 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon" variant="sidebar" side="left">
       <SidebarHeader className="p-4 border-b border-sidebar-border">
-        <Link href="/" className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center">
+        <Link href="/feed" className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center">
           <Icons.Logo className="h-8 w-8 text-primary" />
           <span className="font-semibold text-lg group-data-[collapsible=icon]:hidden">Campusverse</span>
         </Link>
@@ -48,7 +48,7 @@ export function AppSidebar() {
             <SidebarMenuItem key={item.href}>
               <SidebarMenuButton
                 asChild
-                isActive={pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href))}
+                isActive={pathname === item.href || (item.href !== "/" && item.href !== "/feed" && pathname.startsWith(item.href)) || (item.href === "/feed" && (pathname === "/" || pathname === "/feed"))}
                 tooltip={{ children: item.tooltip, className: "bg-sidebar-accent text-sidebar-accent-foreground" }}
                 className={cn(
                   "data-[active=true]:bg-sidebar-primary data-[active=true]:text-sidebar-primary-foreground data-[active=true]:hover:bg-sidebar-primary/90",
