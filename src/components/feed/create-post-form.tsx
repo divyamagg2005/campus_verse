@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -69,20 +70,22 @@ export function CreatePostForm() {
             value={postContent}
             onChange={(e) => setPostContent(e.target.value)}
             className="min-h-[100px] resize-none"
+            suppressHydrationWarning={true}
           />
           <Input
             placeholder="Add hashtags, comma separated (e.g., events, studygroup)"
             value={hashtags}
             onChange={(e) => setHashtags(e.target.value)}
+            suppressHydrationWarning={true}
           />
           <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-            <Button type="button" variant="outline" size="sm" asChild className="cursor-pointer">
+            <Button type="button" variant="outline" size="sm" asChild className="cursor-pointer" suppressHydrationWarning={true}>
               <label htmlFor="file-upload" className="flex items-center gap-2 cursor-pointer">
                 <Paperclip className="h-4 w-4" />
                 Attach File
               </label>
             </Button>
-            <Input id="file-upload" type="file" className="hidden" onChange={handleFileChange} />
+            <Input id="file-upload" type="file" className="hidden" onChange={handleFileChange} suppressHydrationWarning={true} />
             {file && <span className="text-sm text-muted-foreground truncate max-w-[200px]">{file.name}</span>}
           </div>
            <div className="flex items-center gap-2 text-muted-foreground">
@@ -93,7 +96,7 @@ export function CreatePostForm() {
           </div>
         </CardContent>
         <CardFooter className="p-4 flex justify-end border-t">
-          <Button type="submit" className="bg-primary hover:bg-primary/90 text-primary-foreground">
+          <Button type="submit" className="bg-primary hover:bg-primary/90 text-primary-foreground" suppressHydrationWarning={true}>
             <Send className="mr-2 h-4 w-4" /> Post
           </Button>
         </CardFooter>
