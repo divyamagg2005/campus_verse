@@ -46,49 +46,49 @@ body {
   }
 
   .dark {
-    --background: 0 0% 5%; /* #0D0D0D */
-    --foreground: 0 0% 100%; /* #FFFFFF */
+    --background: 213 96% 12%; /* #011C40 */
+    --foreground: 0 0% 95%; /* #F2F2F2 (Off-white for text) */
 
-    --card: 0 0% 8%; /* #141414 */
-    --card-foreground: 0 0% 100%; /* #FFFFFF */
+    --card: 225 83% 19%; /* #081C59 */
+    --card-foreground: 0 0% 95%; /* #F2F2F2 */
 
-    --popover: 0 0% 8%; /* #141414 */
-    --popover-foreground: 0 0% 100%; /* #FFFFFF */
+    --popover: 225 83% 19%; /* #081C59 */
+    --popover-foreground: 0 0% 95%; /* #F2F2F2 */
 
-    --primary: 150 100% 50%; /* #00FF85 (Neon Green) */
-    --primary-foreground: 0 0% 5%; /* #0D0D0D (Dark text for contrast on Neon Green) */
+    --primary: 315 90% 49%; /* #F20CB5 (Bright Pink) */
+    --primary-foreground: 0 0% 100%; /* White for contrast on pink */
 
-    --secondary: 0 0% 15%; /* #262626 (Dark Gray) */
-    --secondary-foreground: 0 0% 100%; /* #FFFFFF */
+    --secondary: 264 66% 27%; /* #3D1773 (Deep Purple) */
+    --secondary-foreground: 0 0% 95%; /* #F2F2F2 */
 
-    --muted: 0 0% 10%; /* #1A1A1A (Slightly lighter dark gray) */
-    --muted-foreground: 0 0% 70%; /* #B3B3B3 (Light Gray for muted text) */
+    --muted: 264 60% 22%; /* Derived from #3D1773, made more muted */
+    --muted-foreground: 0 0% 70%; /* Light Gray for muted text */
 
-    --accent: 210 100% 56%; /* #1E90FF (Electric Blue) */
-    --accent-foreground: 0 0% 100%; /* #FFFFFF (White for text on Electric Blue) */
+    --accent: 303 80% 36%; /* #A6129C (Purple/Pink) */
+    --accent-foreground: 0 0% 100%; /* White */
 
     --destructive: 0 70% 55%; /* Keeping existing red */
-    --destructive-foreground: 0 0% 98%; /* Keeping existing light text */
+    --destructive-foreground: 0 0% 98%; 
 
-    --border: 0 0% 12%; /* #1F1F1F (Dark Gray border) */
-    --input: 0 0% 10%; /* #1A1A1A (Input background) */
-    --ring: 150 100% 50%; /* #00FF85 (Neon Green for focus rings) */
+    --border: 264 66% 23%; /* #3D1773 slightly adjusted */
+    --input: 225 80% 22%; /* Derived from card color, slightly lighter/different */
+    --ring: 315 90% 49%; /* #F20CB5 (Bright Pink for focus rings) */
 
-    --chart-1: 150 100% 50%; /* Neon Green */
-    --chart-2: 210 100% 56%; /* Electric Blue */
-    --chart-3: 0 0% 70%;     /* Light Gray */
-    --chart-4: 150 80% 40%;  /* Darker Neon Green */
-    --chart-5: 210 80% 45%;  /* Darker Electric Blue */
+    --chart-1: 315 90% 49%; /* #F20CB5 */
+    --chart-2: 303 80% 36%; /* #A6129C */
+    --chart-3: 264 66% 27%; /* #3D1773 */
+    --chart-4: 225 83% 25%; /* Lighter shade of #081C59 */
+    --chart-5: 213 90% 30%; /* Lighter shade of #011C40 */
     
     /* Sidebar specific colors for dark mode */
-    --sidebar-background: 0 0% 4%; /* #0A0A0A (Slightly darker than main bg) */
-    --sidebar-foreground: 0 0% 95%; /* #F2F2F2 (Slightly off-white) */
-    --sidebar-primary: 150 100% 50%; /* #00FF85 (Neon Green for active items) */
-    --sidebar-primary-foreground: 0 0% 5%; /* #0D0D0D (Dark text on Neon Green) */
-    --sidebar-accent: 325 100% 50%; /* #FF0099 (Vivid Pink for hover) */
-    --sidebar-accent-foreground: 0 0% 100%; /* #FFFFFF (White text on Vivid Pink) */
-    --sidebar-border: 0 0% 10%; /* #1A1A1A (Darker border for sidebar elements) */
-    --sidebar-ring: 150 100% 50%; /* #00FF85 (Neon Green for focus rings) */
+    --sidebar-background: 213 96% 10%; /* Slightly darker variant of main background #011C40 */
+    --sidebar-foreground: 0 0% 90%; /* #E6E6E6 (Slightly off-white) */
+    --sidebar-primary: 315 90% 49%; /* #F20CB5 (Bright Pink for active items) */
+    --sidebar-primary-foreground: 0 0% 100%; /* White text on Bright Pink */
+    --sidebar-accent: 303 80% 36%; /* #A6129C (Purple/Pink for hover) */
+    --sidebar-accent-foreground: 0 0% 100%; /* White text on Purple/Pink */
+    --sidebar-border: 264 66% 20%; /* Darker version of #3D1773 for sidebar elements */
+    --sidebar-ring: 315 90% 49%; /* #F20CB5 (Bright Pink for focus rings) */
   }
 }
 
