@@ -55,16 +55,16 @@ body {
     --popover: 0 0% 8%; /* Dark Gray for popovers */
     --popover-foreground: 0 0% 95%;
 
-    --primary: 264 66% 27%; /* Deep Purple (hsla(264, 66%, 27%, 1)) */
-    --primary-foreground: 0 0% 100%; /* White */
+    --primary: 210 100% 56%; /* Electric Blue (e.g., #1E90FF) */
+    --primary-foreground: 0 0% 100%; /* White for contrast with Electric Blue */
 
-    --secondary: 303 80% 36%; /* Purple/Pink (hsla(303, 80%, 36%, 1)) */
+    --secondary: 303 80% 36%; /* Purple/Pink (hsla(303, 80%, 36%, 1)) - Remains */
     --secondary-foreground: 0 0% 95%; 
 
     --muted: 0 0% 10%; /* Darker Gray for muted backgrounds */
     --muted-foreground: 0 0% 65%; /* Lighter Gray for muted text */
 
-    --accent: 315 90% 49%; /* Bright Pink (hsla(315, 90%, 49%, 1)) */
+    --accent: 315 90% 49%; /* Bright Pink (hsla(315, 90%, 49%, 1)) - Remains */
     --accent-foreground: 0 0% 100%; /* White */
 
     --destructive: 0 70% 55%; 
@@ -72,24 +72,24 @@ body {
 
     --border: 0 0% 12%; /* Subtle Dark Gray border */
     --input: 0 0% 10%; /* Dark Gray input background */
-    --ring: 264 66% 27%; /* Deep Purple for focus rings */
+    --ring: 210 100% 56%; /* Electric Blue for focus rings */
 
     /* Chart colors based on the accent palette */
     --chart-1: 315 90% 49%; /* Bright Pink */
     --chart-2: 303 80% 36%; /* Purple/Pink */
-    --chart-3: 264 66% 27%; /* Deep Purple (Primary) */
+    --chart-3: 210 100% 56%; /* Electric Blue (New Primary) */
     --chart-4: 315 90% 60%; /* Lighter Bright Pink */
     --chart-5: 303 80% 50%; /* Lighter Purple/Pink */
     
     /* Sidebar specific colors for dark mode */
     --sidebar-background: 0 0% 5%; /* Same as main background */
     --sidebar-foreground: 0 0% 90%; 
-    --sidebar-primary: 264 66% 27%; /* Deep Purple for active items */
+    --sidebar-primary: 210 100% 56%; /* Electric Blue for active items */
     --sidebar-primary-foreground: 0 0% 100%; 
-    --sidebar-accent: 315 90% 49%; /* Bright Pink for hover */
+    --sidebar-accent: 315 90% 49%; /* Bright Pink for hover - Remains */
     --sidebar-accent-foreground: 0 0% 100%; 
     --sidebar-border: 0 0% 10%; /* Darker version for sidebar elements */
-    --sidebar-ring: 264 66% 27%; 
+    --sidebar-ring: 210 100% 56%; /* Electric Blue for focus rings */
   }
 }
 
