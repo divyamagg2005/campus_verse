@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -78,7 +79,7 @@ export function SignupForm() {
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                     <FormControl>
-                      <Input placeholder="Your Full Name" {...field} className="pl-10" />
+                      <Input placeholder="Your Full Name" {...field} className="pl-10" suppressHydrationWarning={true} />
                     </FormControl>
                   </div>
                   <FormMessage />
@@ -94,7 +95,7 @@ export function SignupForm() {
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                     <FormControl>
-                      <Input type="email" placeholder="your.email@college.edu" {...field} className="pl-10" />
+                      <Input type="email" placeholder="your.email@college.edu" {...field} className="pl-10" suppressHydrationWarning={true} />
                     </FormControl>
                   </div>
                   <FormMessage />
@@ -110,7 +111,7 @@ export function SignupForm() {
                   <div className="relative">
                     <LockKeyhole className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                     <FormControl>
-                      <Input type="password" placeholder="••••••••" {...field} className="pl-10" />
+                      <Input type="password" placeholder="••••••••" {...field} className="pl-10" suppressHydrationWarning={true} />
                     </FormControl>
                   </div>
                   <FormMessage />
@@ -126,7 +127,7 @@ export function SignupForm() {
                   <div className="relative">
                     <LockKeyhole className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                     <FormControl>
-                      <Input type="password" placeholder="••••••••" {...field} className="pl-10" />
+                      <Input type="password" placeholder="••••••••" {...field} className="pl-10" suppressHydrationWarning={true} />
                     </FormControl>
                   </div>
                   <FormMessage />
@@ -143,7 +144,7 @@ export function SignupForm() {
                      <School className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground z-10" />
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
-                        <SelectTrigger className="pl-10">
+                        <SelectTrigger className="pl-10" suppressHydrationWarning={true}>
                           <SelectValue placeholder="Select your college" />
                         </SelectTrigger>
                       </FormControl>
@@ -160,7 +161,7 @@ export function SignupForm() {
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
+            <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" suppressHydrationWarning={true}>
               Sign Up
             </Button>
           </form>

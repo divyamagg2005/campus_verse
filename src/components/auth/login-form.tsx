@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -61,7 +62,7 @@ export function LoginForm() {
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                     <FormControl>
-                      <Input type="email" placeholder="your.email@example.com" {...field} className="pl-10" />
+                      <Input type="email" placeholder="your.email@example.com" {...field} className="pl-10" suppressHydrationWarning={true} />
                     </FormControl>
                   </div>
                   <FormMessage />
@@ -77,14 +78,14 @@ export function LoginForm() {
                     <div className="relative">
                       <LockKeyhole className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                       <FormControl>
-                        <Input type="password" placeholder="••••••••" {...field} className="pl-10" />
+                        <Input type="password" placeholder="••••••••" {...field} className="pl-10" suppressHydrationWarning={true} />
                       </FormControl>
                     </div>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
+            <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" suppressHydrationWarning={true}>
               Login
             </Button>
           </form>
