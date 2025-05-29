@@ -40,7 +40,7 @@ export function LoginForm() {
     console.log("Login submitted", values);
     // Redirect to dashboard on successful login
     // In a real app, you'd handle auth state and redirect based on it
-    router.push("/dashboard"); 
+    router.push("/"); 
   }
 
   return (

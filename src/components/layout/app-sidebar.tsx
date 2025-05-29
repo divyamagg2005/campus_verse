@@ -14,13 +14,13 @@ import {
   SidebarMenuSkeleton,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
-import { Home, MessageSquare, Users, Settings, Compass, LogOut, HelpCircle } from "lucide-react";
+import { Home, MessageSquare, Users, Settings, Compass, LogOut, HelpCircle, UserCircle } from "lucide-react"; // Added UserCircle
 
 const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: Home, tooltip: "Dashboard" },
+  { href: "/", label: "Dashboard", icon: Home, tooltip: "Dashboard" },
   { href: "/messages", label: "Messages", icon: MessageSquare, tooltip: "Messages" },
   { href: "/communities", label: "Communities", icon: Users, tooltip: "Communities" },
-  { href: "/discover", label: "Discover", icon: Compass, tooltip: "Discover" }, // Placeholder for search/discovery
+  { href: "/discover", label: "Discover", icon: Compass, tooltip: "Discover" },
 ];
 
 const bottomNavItems = [
@@ -35,7 +35,7 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon" variant="sidebar" side="left">
       <SidebarHeader className="p-4 border-b border-sidebar-border">
-        <Link href="/dashboard" className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center">
+        <Link href="/" className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center">
           <Icons.Logo className="h-8 w-8 text-primary" />
           <span className="font-semibold text-lg group-data-[collapsible=icon]:hidden">CampusConnect</span>
         </Link>
@@ -46,7 +46,7 @@ export function AppSidebar() {
             <SidebarMenuItem key={item.href}>
               <SidebarMenuButton
                 asChild
-                isActive={pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href))}
+                isActive={pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href))}
                 tooltip={{ children: item.tooltip, className: "bg-sidebar-accent text-sidebar-accent-foreground" }}
                 className={cn(
                   "data-[active=true]:bg-sidebar-primary data-[active=true]:text-sidebar-primary-foreground data-[active=true]:hover:bg-sidebar-primary/90",
