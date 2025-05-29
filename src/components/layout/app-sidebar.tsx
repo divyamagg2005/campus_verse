@@ -18,11 +18,11 @@ import { cn } from "@/lib/utils";
 import { Home, MessageSquare, Settings, LogOut, HelpCircle, UserCircle, Search, Bell, PlusSquare } from "lucide-react";
 
 const navItems = [
-  { href: "/", label: "Home", icon: Home, tooltip: "Home" },
+  { href: "/", label: "Home", icon: Home, tooltip: "Home" }, // This links to the user feed
   { href: "/discover", label: "Search", icon: Search, tooltip: "Search" },
   { href: "/messages", label: "Messages", icon: MessageSquare, tooltip: "Messages" },
-  { href: "/notifications", label: "Notifications", icon: Bell, tooltip: "Notifications" }, // Placeholder link
-  { href: "/create-post", label: "Create", icon: PlusSquare, tooltip: "Create Post" }, // Placeholder link
+  { href: "/notifications", label: "Notifications", icon: Bell, tooltip: "Notifications" }, 
+  { href: "/create-post", label: "Create", icon: PlusSquare, tooltip: "Create Post" }, 
 ];
 
 const bottomNavItems = [
