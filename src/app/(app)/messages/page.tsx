@@ -6,8 +6,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Search, Send, Smile, Paperclip, Phone, Video, PlusCircle, MessageSquare } from "lucide-react";
+import { Search, Send, Smile, Paperclip, Phone, Video, PlusCircle, MessageSquare, ChevronLeft } from "lucide-react";
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile'; // Import useIsMobile
 
 interface User {
   id: string;
@@ -56,11 +57,21 @@ const dummyMessages: { [key: string]: Message[] } = {
 
 
 export default function MessagesPage() {
-  const [selectedUser, setSelectedUser] = useState<User | null>(dummyUsers[0]);
-  const [messages, setMessages] = useState<Message[]>(dummyMessages[dummyUsers[0]?.id] || []);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const isMobile = useIsMobile();
+  const [showChatMobile, setShowChatMobile] = useState(false);
+
+  // Initialize selectedUser to the first user on desktop only
+  useEffect(() => {
+    if (!isMobile && dummyUsers.length > 0) {
+      setSelectedUser(dummyUsers[0]);
+    }
+  }, [isMobile]);
+
 
   const filteredUsers = dummyUsers.filter(user => 
     user.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -77,9 +88,22 @@ export default function MessagesPage() {
         isOwn: true,
       };
       setMessages(prevMessages => [...prevMessages, newMsg]);
+      dummyMessages[selectedUser.id] = [...(dummyMessages[selectedUser.id] || []), newMsg]; // Update dummy data
       setNewMessage("");
     }
   };
+
+  const handleSelectUser = (user: User) => {
+    setSelectedUser(user);
+    if (isMobile) {
+      setShowChatMobile(true);
+    }
+  };
+
+  const handleBackToListMobile = () => {
+    setShowChatMobile(false);
+    setSelectedUser(null); // Optionally clear selected user when going back on mobile
+  }
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -93,163 +117,186 @@ export default function MessagesPage() {
     }
   }, [selectedUser]);
 
-
-  return (
-    <div className="flex h-full border rounded-xl overflow-hidden shadow-xl bg-card">
-      {/* Sidebar with users list */}
-      <aside className="w-1/3 min-w-[280px] max-w-[380px] border-r border-border flex flex-col">
-        <div className="p-3 border-b border-border sticky top-0 bg-card z-10">
-            <div className="flex items-center justify-between mb-2">
-                <h2 className="text-xl font-semibold">Chats</h2>
-                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary" suppressHydrationWarning={true}>
-                    <PlusCircle className="h-5 w-5" />
-                </Button>
-            </div>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input 
-              placeholder="Search chats..." 
-              className="pl-10 rounded-md bg-background focus:bg-card" // Changed rounding and focus bg
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              suppressHydrationWarning={true}
-            />
+  const UserListAside = () => (
+    <aside className={cn(
+      "border-border flex flex-col bg-card",
+      isMobile ? "w-full h-full" : "w-1/3 min-w-[280px] max-w-[380px] border-r"
+    )}>
+      <div className="p-3 border-b border-border sticky top-0 bg-card z-10">
+          <div className="flex items-center justify-between mb-2">
+              <h2 className="text-xl font-semibold">Chats</h2>
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary" suppressHydrationWarning={true}>
+                  <PlusCircle className="h-5 w-5" />
+              </Button>
           </div>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input 
+            placeholder="Search chats..." 
+            className="pl-10 rounded-md bg-background focus:bg-card"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            suppressHydrationWarning={true}
+          />
         </div>
-        <ScrollArea className="flex-1">
-          <nav className="p-2 space-y-1"> {/* Added padding and space-y */}
-            {filteredUsers.map((user) => (
-              <button
-                key={user.id}
-                className={cn(
-                  "w-full flex items-center gap-3 text-left py-2 px-3 rounded-md hover:bg-muted focus-visible:bg-muted outline-none transition-colors duration-150",
-                  selectedUser?.id === user.id && "bg-primary text-primary-foreground hover:bg-primary/90"
-                )}
-                onClick={() => setSelectedUser(user)}
-                suppressHydrationWarning={true}
-              >
-                <Avatar className="h-10 w-10 relative"> {/* Reduced avatar size */}
-                  <AvatarImage src={user.avatarUrl} alt={user.name} data-ai-hint="user avatar" />
-                  <AvatarFallback>{user.name.substring(0, 2).toUpperCase()}</AvatarFallback>
-                  {user.online && <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-green-500 ring-2 ring-background" />} {/* ring-background */}
-                </Avatar>
-                <div className="flex-1 min-w-0">
-                  <div className="flex justify-between items-center">
-                    <p className="text-sm font-medium truncate">{user.name}</p>
-                    <span className="text-xs text-muted-foreground flex-shrink-0 ml-2">{user.lastMessageTime}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <p className="text-xs text-muted-foreground truncate mt-0.5">{user.lastMessage}</p>
-                    {user.unreadCount && user.unreadCount > 0 && (
-                      <span className="ml-2 text-xs bg-primary-foreground/20 text-primary-foreground rounded-full px-1.5 py-0.5 font-medium"> {/* Adjusted unread badge for selected state */}
-                        {user.unreadCount}
-                      </span>
-                    )}
-                  </div>
+      </div>
+      <ScrollArea className="flex-1">
+        <nav className="p-2 space-y-1">
+          {filteredUsers.map((user) => (
+            <button
+              key={user.id}
+              className={cn(
+                "w-full flex items-center gap-3 text-left py-2 px-3 rounded-md hover:bg-muted focus-visible:bg-muted outline-none transition-colors duration-150",
+                selectedUser?.id === user.id && !isMobile && "bg-primary text-primary-foreground hover:bg-primary/90"
+              )}
+              onClick={() => handleSelectUser(user)}
+              suppressHydrationWarning={true}
+            >
+              <Avatar className="h-10 w-10 relative">
+                <AvatarImage src={user.avatarUrl} alt={user.name} data-ai-hint="user avatar" />
+                <AvatarFallback>{user.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                {user.online && <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-green-500 ring-2 ring-background" />}
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <div className="flex justify-between items-center">
+                  <p className="text-sm font-medium truncate">{user.name}</p>
+                  <span className={cn("text-xs flex-shrink-0 ml-2", selectedUser?.id === user.id && !isMobile ? 'text-primary-foreground/70' : 'text-muted-foreground')}>{user.lastMessageTime}</span>
                 </div>
-              </button>
-            ))}
-             {filteredUsers.length === 0 && (
-                <p className="text-center text-muted-foreground p-4 text-sm">No users found.</p>
-            )}
-          </nav>
-        </ScrollArea>
-      </aside>
-
-      {/* Main chat window */}
-      <main className="flex-1 flex flex-col bg-background">
-        {selectedUser ? (
-          <>
-            <header className="p-4 border-b border-border flex items-center justify-between bg-card sticky top-0 z-10">
-              <div className="flex items-center gap-3">
-                <Avatar className="h-10 w-10">
-                  <AvatarImage src={selectedUser.avatarUrl} alt={selectedUser.name} data-ai-hint="user avatar" />
-                  <AvatarFallback>{selectedUser.name.substring(0, 2).toUpperCase()}</AvatarFallback>
-                </Avatar>
-                <div>
-                  <h2 className="text-lg font-semibold">{selectedUser.name}</h2>
-                  {selectedUser.online ? (
-                     <p className="text-xs text-green-500 flex items-center"><span className="h-1.5 w-1.5 bg-green-500 rounded-full mr-1.5"></span>Online</p>
-                  ) : (
-                    <p className="text-xs text-muted-foreground">Offline</p>
+                <div className="flex justify-between items-center">
+                  <p className={cn("text-xs truncate mt-0.5", selectedUser?.id === user.id && !isMobile ? 'text-primary-foreground/70' : 'text-muted-foreground')}>{user.lastMessage}</p>
+                  {user.unreadCount && user.unreadCount > 0 && (
+                    <span className={cn(
+                      "ml-2 text-xs rounded-full px-1.5 py-0.5 font-medium",
+                      selectedUser?.id === user.id && !isMobile ? "bg-primary-foreground text-primary" : "bg-primary text-primary-foreground"
+                    )}>
+                      {user.unreadCount}
+                    </span>
                   )}
                 </div>
               </div>
-              <div className="flex items-center gap-1">
-                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary" suppressHydrationWarning={true}><Phone className="h-5 w-5" /></Button>
-                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary" suppressHydrationWarning={true}><Video className="h-5 w-5" /></Button>
+            </button>
+          ))}
+           {filteredUsers.length === 0 && (
+              <p className="text-center text-muted-foreground p-4 text-sm">No users found.</p>
+          )}
+        </nav>
+      </ScrollArea>
+    </aside>
+  );
+
+  const ChatMain = () => (
+    <main className="flex-1 flex flex-col bg-background">
+      {selectedUser ? (
+        <>
+          <header className="p-4 border-b border-border flex items-center justify-between bg-card sticky top-0 z-10">
+            <div className="flex items-center gap-3">
+              {isMobile && (
+                <Button variant="ghost" size="icon" onClick={handleBackToListMobile} className="mr-2 text-muted-foreground hover:text-primary">
+                  <ChevronLeft className="h-6 w-6" />
+                </Button>
+              )}
+              <Avatar className="h-10 w-10">
+                <AvatarImage src={selectedUser.avatarUrl} alt={selectedUser.name} data-ai-hint="user avatar" />
+                <AvatarFallback>{selectedUser.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+              </Avatar>
+              <div>
+                <h2 className="text-lg font-semibold">{selectedUser.name}</h2>
+                {selectedUser.online ? (
+                   <p className="text-xs text-green-500 flex items-center"><span className="h-1.5 w-1.5 bg-green-500 rounded-full mr-1.5"></span>Online</p>
+                ) : (
+                  <p className="text-xs text-muted-foreground">Offline</p>
+                )}
               </div>
-            </header>
-            
-            <ScrollArea className="flex-1 p-4 sm:p-6 space-y-4">
-              {messages.map((msg) => (
+            </div>
+            <div className="flex items-center gap-1">
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary" suppressHydrationWarning={true}><Phone className="h-5 w-5" /></Button>
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary" suppressHydrationWarning={true}><Video className="h-5 w-5" /></Button>
+            </div>
+          </header>
+          
+          <ScrollArea className="flex-1 p-4 sm:p-6 space-y-4">
+            {messages.map((msg) => (
+              <div
+                key={msg.id}
+                className={cn(
+                  "flex items-end gap-2.5 max-w-[80%] sm:max-w-[70%]",
+                  msg.isOwn ? "ml-auto flex-row-reverse" : "mr-auto"
+                )}
+              >
+                {!msg.isOwn && (
+                  <Avatar className="h-8 w-8 self-start flex-shrink-0">
+                     <AvatarImage src={selectedUser.avatarUrl} alt={selectedUser.name} data-ai-hint="user avatar" />
+                     <AvatarFallback>{selectedUser.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                )}
+                 {msg.isOwn && (
+                  <Avatar className="h-8 w-8 self-start flex-shrink-0">
+                     <AvatarImage src="https://placehold.co/40x40.png?text=ME" alt="My Avatar" data-ai-hint="user avatar" />
+                     <AvatarFallback>ME</AvatarFallback>
+                  </Avatar>
+                )}
                 <div
-                  key={msg.id}
                   className={cn(
-                    "flex items-end gap-2.5 max-w-[80%] sm:max-w-[70%]",
-                    msg.isOwn ? "ml-auto flex-row-reverse" : "mr-auto"
+                    "p-2.5 px-3.5 rounded-2xl shadow-sm break-words",
+                    msg.isOwn
+                      ? "bg-primary text-primary-foreground rounded-br-md"
+                      : "bg-card text-card-foreground border border-border rounded-bl-md"
                   )}
                 >
-                  {!msg.isOwn && (
-                    <Avatar className="h-8 w-8 self-start flex-shrink-0">
-                       <AvatarImage src={selectedUser.avatarUrl} alt={selectedUser.name} data-ai-hint="user avatar" />
-                       <AvatarFallback>{selectedUser.name.substring(0, 2).toUpperCase()}</AvatarFallback>
-                    </Avatar>
-                  )}
-                   {msg.isOwn && (
-                    <Avatar className="h-8 w-8 self-start flex-shrink-0">
-                       <AvatarImage src="https://placehold.co/40x40.png?text=ME" alt="My Avatar" data-ai-hint="user avatar" />
-                       <AvatarFallback>ME</AvatarFallback>
-                    </Avatar>
-                  )}
-                  <div
-                    className={cn(
-                      "p-2.5 px-3.5 rounded-2xl shadow-sm break-words",
-                      msg.isOwn
-                        ? "bg-primary text-primary-foreground rounded-br-md"
-                        : "bg-card text-card-foreground border border-border rounded-bl-md"
+                  <p className="text-sm leading-relaxed">{msg.text}</p>
+                  <p className={cn(
+                      "text-xs mt-1.5 text-right", 
+                      msg.isOwn ? "text-primary-foreground/70" : "text-muted-foreground"
                     )}
                   >
-                    <p className="text-sm leading-relaxed">{msg.text}</p>
-                    <p className={cn(
-                        "text-xs mt-1.5 text-right", 
-                        msg.isOwn ? "text-primary-foreground/70" : "text-muted-foreground"
-                      )}
-                    >
-                      {msg.timestamp}
-                    </p>
-                  </div>
+                    {msg.timestamp}
+                  </p>
                 </div>
-              ))}
-              <div ref={messagesEndRef} />
-            </ScrollArea>
+              </div>
+            ))}
+            <div ref={messagesEndRef} />
+          </ScrollArea>
 
-            <footer className="p-3 sm:p-4 border-t border-border bg-card sticky bottom-0 z-10">
-              <form onSubmit={handleSendMessage} className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" type="button" className="text-muted-foreground hover:text-primary" suppressHydrationWarning={true}><Smile className="h-5 w-5" /></Button>
-                <Button variant="ghost" size="icon" type="button" className="text-muted-foreground hover:text-primary" suppressHydrationWarning={true}><Paperclip className="h-5 w-5" /></Button>
-                <Input
-                  placeholder="Type a message..."
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  className="flex-1 rounded-full bg-background focus:bg-background px-4 py-2 h-10"
-                  autoComplete="off"
-                  suppressHydrationWarning={true}
-                />
-                <Button type="submit" size="icon" className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full w-10 h-10 flex-shrink-0" suppressHydrationWarning={true}>
-                  <Send className="h-5 w-5" />
-                </Button>
-              </form>
-            </footer>
-          </>
-        ) : (
-          <div className="flex-1 flex flex-col items-center justify-center text-center text-muted-foreground p-8">
-            <MessageSquare className="h-16 w-16 mb-4 opacity-50" />
-            <h2 className="text-xl font-semibold">No chat selected</h2>
-            <p className="max-w-xs">Select a conversation from the list on the left, or start a new one to begin messaging.</p>
-          </div>
-        )}
-      </main>
+          <footer className="p-3 sm:p-4 border-t border-border bg-card sticky bottom-0 z-10">
+            <form onSubmit={handleSendMessage} className="flex items-center gap-2">
+              <Button variant="ghost" size="icon" type="button" className="text-muted-foreground hover:text-primary" suppressHydrationWarning={true}><Smile className="h-5 w-5" /></Button>
+              <Button variant="ghost" size="icon" type="button" className="text-muted-foreground hover:text-primary" suppressHydrationWarning={true}><Paperclip className="h-5 w-5" /></Button>
+              <Input
+                placeholder="Type a message..."
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                className="flex-1 rounded-full bg-background focus:bg-background px-4 py-2 h-10"
+                autoComplete="off"
+                suppressHydrationWarning={true}
+              />
+              <Button type="submit" size="icon" className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full w-10 h-10 flex-shrink-0" suppressHydrationWarning={true}>
+                <Send className="h-5 w-5" />
+              </Button>
+            </form>
+          </footer>
+        </>
+      ) : (
+        <div className="flex-1 flex flex-col items-center justify-center text-center text-muted-foreground p-8">
+          <MessageSquare className="h-16 w-16 mb-4 opacity-50" />
+          <h2 className="text-xl font-semibold">No chat selected</h2>
+          <p className="max-w-xs">Select a conversation from the list on the left, or start a new one to begin messaging.</p>
+        </div>
+      )}
+    </main>
+  );
+
+
+  return (
+    <div className="flex flex-col md:flex-row h-full border rounded-xl overflow-hidden shadow-xl">
+      {isMobile ? (
+        showChatMobile && selectedUser ? <ChatMain /> : <UserListAside />
+      ) : (
+        <>
+          <UserListAside />
+          <ChatMain />
+        </>
+      )}
     </div>
   );
 }
+
