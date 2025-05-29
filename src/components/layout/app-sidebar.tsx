@@ -15,14 +15,15 @@ import {
   SidebarFooter,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
-import { Home, MessageSquare, Settings, LogOut, HelpCircle, UserCircle, Search as SearchIcon, Bell, PlusSquare } from "lucide-react"; // Renamed Search to SearchIcon
-import { useSearch } from "@/contexts/SearchContext"; // Import useSearch
+import { Home, MessageSquare, Settings, LogOut, HelpCircle, UserCircle, Search as SearchIcon, Bell, PlusSquare } from "lucide-react"; 
+import { useSearch } from "@/contexts/SearchContext"; 
 
 const mainNavItems = [
   { id: "home", label: "Home", icon: Home, tooltip: "Home Feed", href: "/feed" },
+  // Discover was removed, Search UI is now integrated
   { id: "messages", label: "Messages", icon: MessageSquare, tooltip: "Messages", href: "/messages" },
-  { id: "notifications", label: "Notifications", icon: Bell, tooltip: "Notifications", href: "/notifications" },
-  { id: "create-post", label: "Create", icon: PlusSquare, tooltip: "Create Post", href: "/create-post" },
+  { id: "notifications", label: "Notifications", icon: Bell, tooltip: "Notifications", href: "/notifications" }, // Placeholder href
+  { id: "create-post", label: "Create", icon: PlusSquare, tooltip: "Create Post", href: "/create-post" }, // Placeholder href
 ];
 
 const bottomNavItems = [
@@ -36,25 +37,22 @@ export function AppSidebar() {
   const { setIsSearchActive, setSearchQuery, isSearchActive } = useSearch();
 
   const handleSearchClick = () => {
-    setSearchQuery(''); // Clear previous query
+    setSearchQuery(''); 
     setIsSearchActive(true);
-    // Potentially focus the input in AppHeader if a mechanism exists (e.g., via another context/ref)
-    // For now, just activating the search UI is sufficient.
     const searchInput = document.getElementById('global-search-input') as HTMLInputElement | null;
     if (searchInput) {
         searchInput.focus();
     }
   };
   
-  // When navigating away using sidebar, deactivate search
   React.useEffect(() => {
-    if(isSearchActive) {
-        // Check if the current path is NOT related to a search interaction path
-        // This logic might need refinement based on how search interaction URLs are handled (if any)
-        setIsSearchActive(false);
+    // If the path changes (e.g. browser back/forward) while search is active, deactivate search.
+    // Navigating via sidebar links already handles this in their onClick.
+    if (isSearchActive) {
+      setIsSearchActive(false);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname, setIsSearchActive]);
+  }, [pathname]); // Only run when pathname changes
 
 
   return (
@@ -74,7 +72,7 @@ export function AppSidebar() {
               tooltip={{ children: "Search", className: "bg-sidebar-accent text-sidebar-accent-foreground" }}
               className={cn(
                 "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                isSearchActive && "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90" // Active style if search is active
+                isSearchActive && "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90" 
               )}
             >
               <SearchIcon />
@@ -86,8 +84,8 @@ export function AppSidebar() {
             <SidebarMenuItem key={item.id}>
               <SidebarMenuButton
                 asChild
-                isActive={pathname === item.href || (item.href !== "/" && item.href !== "/feed" && pathname.startsWith(item.href)) || (item.href === "/feed" && (pathname === "/" || pathname === "/feed"))}
-                onClick={() => setIsSearchActive(false)} // Deactivate search on navigation
+                isActive={!isSearchActive && (pathname === item.href || (item.href !== "/" && item.href !== "/feed" && pathname.startsWith(item.href)) || (item.href === "/feed" && (pathname === "/" || pathname === "/feed")))}
+                onClick={() => setIsSearchActive(false)} 
                 tooltip={{ children: item.tooltip, className: "bg-sidebar-accent text-sidebar-accent-foreground" }}
                 className={cn(
                   "data-[active=true]:bg-sidebar-primary data-[active=true]:text-sidebar-primary-foreground data-[active=true]:hover:bg-sidebar-primary/90",
@@ -109,8 +107,8 @@ export function AppSidebar() {
             <SidebarMenuItem key={item.id}>
               <SidebarMenuButton
                 asChild
-                isActive={pathname === item.href}
-                onClick={() => setIsSearchActive(false)} // Deactivate search on navigation
+                isActive={!isSearchActive && pathname === item.href}
+                onClick={() => setIsSearchActive(false)} 
                 tooltip={{ children: item.tooltip, className: "bg-sidebar-accent text-sidebar-accent-foreground" }}
                 className={cn(
                   "data-[active=true]:bg-sidebar-primary data-[active=true]:text-sidebar-primary-foreground data-[active=true]:hover:bg-sidebar-primary/90",
@@ -125,7 +123,6 @@ export function AppSidebar() {
             </SidebarMenuItem>
           ))}
           <SidebarMenuItem>
-            {/* In a real app, Logout would clear auth state and redirect */}
             <SidebarMenuButton 
               className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground" 
               tooltip={{ children: "Logout", className: "bg-sidebar-accent text-sidebar-accent-foreground" }}
