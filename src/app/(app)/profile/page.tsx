@@ -1,3 +1,4 @@
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -62,7 +63,7 @@ export default function ProfilePage() {
           />
         </div>
         <div className="p-6">
-          <div className="flex flex-col sm:flex-row items-start gap-6 -mt-16 sm:-mt-20">
+          <div className="flex flex-col sm:flex-row items-start gap-8 -mt-16 sm:-mt-20"> {/* Increased gap from 6 to 8 */}
             <Avatar className="h-32 w-32 sm:h-40 sm:w-40 border-4 border-background rounded-full shadow-xl">
               <AvatarImage src={userProfile.avatarUrl} alt={userProfile.name} data-ai-hint="user avatar" />
               <AvatarFallback>{userProfile.name.substring(0, 2).toUpperCase()}</AvatarFallback>
@@ -81,7 +82,7 @@ export default function ProfilePage() {
         </div>
       </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8"> {/* Increased gap from 6 to 8 */}
         {/* Left Sidebar - Info */}
         <div className="md:col-span-1 space-y-6">
           <Card>
