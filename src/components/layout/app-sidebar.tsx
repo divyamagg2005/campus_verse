@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -14,13 +15,14 @@ import {
   SidebarMenuSkeleton,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
-import { Home, MessageSquare, Users, Settings, Compass, LogOut, HelpCircle, UserCircle } from "lucide-react"; // Added UserCircle
+import { Home, MessageSquare, Settings, LogOut, HelpCircle, UserCircle, Search, Bell, PlusSquare } from "lucide-react";
 
 const navItems = [
-  { href: "/", label: "Dashboard", icon: Home, tooltip: "Dashboard" },
+  { href: "/", label: "Home", icon: Home, tooltip: "Home" },
+  { href: "/discover", label: "Search", icon: Search, tooltip: "Search" },
   { href: "/messages", label: "Messages", icon: MessageSquare, tooltip: "Messages" },
-  { href: "/communities", label: "Communities", icon: Users, tooltip: "Communities" },
-  { href: "/discover", label: "Discover", icon: Compass, tooltip: "Discover" },
+  { href: "/notifications", label: "Notifications", icon: Bell, tooltip: "Notifications" }, // Placeholder link
+  { href: "/create-post", label: "Create", icon: PlusSquare, tooltip: "Create Post" }, // Placeholder link
 ];
 
 const bottomNavItems = [
