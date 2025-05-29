@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LockKeyhole, Mail } from 'lucide-react';
-import { useRouter } from 'next/navigation'; // Corrected import
+import { useRouter } from 'next/navigation'; 
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
@@ -39,9 +39,8 @@ export function LoginForm() {
   function onSubmit(values: LoginFormValues) {
     // Simulate API call
     console.log("Login submitted", values);
-    // Redirect to feed page on successful login
-    // In a real app, you'd handle auth state and redirect based on it
-    router.push("/feed"); 
+    // Redirect to select college page on successful login
+    router.push("/select-college"); 
   }
 
   return (

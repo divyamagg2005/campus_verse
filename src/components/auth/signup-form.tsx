@@ -17,16 +17,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { User, Mail, LockKeyhole, School } from 'lucide-react';
+import { User, Mail, LockKeyhole, School as SchoolIcon } from 'lucide-react'; // Renamed School to SchoolIcon
 import { useRouter } from 'next/navigation';
-
-// Dummy list of colleges
-const colleges = [
-  { id: "stanford", name: "Stanford University" },
-  { id: "mit", name: "Massachusetts Institute of Technology" },
-  { id: "harvard", name: "Harvard University" },
-  { id: "caltech", name: "California Institute of Technology" },
-];
+import { colleges } from '@/lib/colleges'; // Import shared colleges list
 
 const signupSchema = z.object({
   fullName: z.string().min(2, { message: "Full name must be at least 2 characters." }),
@@ -57,8 +50,14 @@ export function SignupForm() {
   function onSubmit(values: SignupFormValues) {
     // Simulate API call for signup
     console.log("Signup submitted", values);
-    // In a real app, you'd handle user creation, email verification, and then redirect
-    router.push("/feed"); 
+    // In a real app, you'd handle user creation, email verification.
+    // For now, redirect to the community page of the selected college.
+    if (values.college) {
+      router.push(`/communities/${values.college}`);
+    } else {
+      // Fallback, though college is required by schema
+      router.push("/feed"); 
+    }
   }
 
   return (
@@ -141,7 +140,7 @@ export function SignupForm() {
                 <FormItem>
                   <FormLabel>College/University</FormLabel>
                   <div className="relative">
-                     <School className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground z-10" />
+                     <SchoolIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground z-10" />
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger className="pl-10" suppressHydrationWarning={true}>
