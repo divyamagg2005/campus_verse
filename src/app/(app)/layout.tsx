@@ -15,7 +15,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
       <AppSidebar />
       <SidebarInset className="flex flex-col">
         {/* AppHeader component removed */}
-        <main className="flex-1 overflow-y-auto p-0 bg-background"> {/* Adjusted padding to p-0 for full-width search results */}
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 bg-background"> {/* Added consistent padding */}
           {isSearchActive ? <SearchResultsDisplay query={searchQuery} /> : children}
         </main>
       </SidebarInset>

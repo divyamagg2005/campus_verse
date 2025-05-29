@@ -82,7 +82,7 @@ const sampleCommunities: Community[] = [
 
 export default function FeedPage() {
   return (
-    <div className="p-4 md:p-6 space-y-6">
+    <div className="space-y-6"> {/* Removed p-4 md:p-6 for parent padding */}
       <Tabs defaultValue="campus" className="w-full">
         <div className="flex justify-center mb-6">
           <TabsList className="grid w-full max-w-md grid-cols-2">

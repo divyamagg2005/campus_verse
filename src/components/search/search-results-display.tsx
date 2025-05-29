@@ -144,7 +144,7 @@ export function SearchResultsDisplay({ query: initialQuery }: {query: string}) {
 
   if (!searchQuery && !initialQuery && results.posts.length === 0 && results.users.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-full text-muted-foreground p-8">
+      <div className="flex flex-col items-center justify-center h-full text-muted-foreground"> {/* Removed p-8 for parent padding */}
         {/* Search input for empty state */}
         <form onSubmit={handleSearchSubmit} className="w-full max-w-md mb-8 relative">
           <SearchIconLucide className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -165,7 +165,7 @@ export function SearchResultsDisplay({ query: initialQuery }: {query: string}) {
   }
 
   return (
-    <div className="space-y-6 p-4 md:p-6">
+    <div className="space-y-6"> {/* Removed p-4 md:p-6 for parent padding */}
       {/* Search Input Bar */}
       <form onSubmit={handleSearchSubmit} className="relative">
         <SearchIconLucide className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />

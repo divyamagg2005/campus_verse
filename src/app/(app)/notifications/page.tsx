@@ -4,7 +4,7 @@ import { Bell } from "lucide-react";
 
 export default function NotificationsPage() {
   return (
-    <div className="max-w-2xl mx-auto space-y-6 p-4 md:p-6">
+    <div className="max-w-2xl mx-auto space-y-6"> {/* Removed p-4 md:p-6 for parent padding */}
         <div className="flex items-center gap-3">
             <Bell className="h-8 w-8 text-primary" />
             <div>
