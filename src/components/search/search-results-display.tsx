@@ -6,8 +6,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { User, Tag, LayoutGrid, Star, Search as SearchIconLucide } from "lucide-react"; // Renamed Search to SearchIconLucide
+import { Input } from "@/components/ui/input"; // Added Input
+import { User, Tag, LayoutGrid, Star, Search as SearchIconLucide } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useSearch } from "@/contexts/SearchContext"; // Added useSearch
 
 // Dummy data - in a real app, this would come from an API
 const allPosts: Post[] = [
@@ -78,16 +80,24 @@ interface SearchResults {
   hashtags: string[];
 }
 
-interface SearchResultsDisplayProps {
-  query: string;
-}
+// Interface for props was missing, now it uses the context query directly.
+// interface SearchResultsDisplayProps {
+//   query: string; 
+// }
 
-export function SearchResultsDisplay({ query }: SearchResultsDisplayProps) {
+export function SearchResultsDisplay({ query: initialQuery }: {query: string}) { // Use initialQuery prop
+  const { searchQuery, setSearchQuery, setIsSearchActive } = useSearch();
   const [results, setResults] = useState<SearchResults>({ posts: [], users: [], hashtags: [] });
+  const [currentLocalQuery, setCurrentLocalQuery] = useState(searchQuery || initialQuery);
 
   useEffect(() => {
-    if (query) {
-      const lowerQuery = query.toLowerCase();
+    setCurrentLocalQuery(searchQuery); // Sync local input with global query
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const queryToUse = searchQuery || initialQuery;
+    if (queryToUse) {
+      const lowerQuery = queryToUse.toLowerCase();
       const filteredPosts = allPosts.filter(post => 
         post.content?.toLowerCase().includes(lowerQuery) ||
         post.hashtags.some(h => h.toLowerCase().includes(lowerQuery.replace('#', ''))) ||
@@ -106,11 +116,47 @@ export function SearchResultsDisplay({ query }: SearchResultsDisplayProps) {
       // Show some top/trending items if query is empty initially
       setResults({ posts: allPosts.slice(0, 4), users: allUsers.slice(0, 2), hashtags: allHashtags.slice(0,5) });
     }
-  }, [query]);
+  }, [searchQuery, initialQuery]);
 
-  if (!query && results.posts.length === 0 && results.users.length === 0) {
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setCurrentLocalQuery(event.target.value);
+  };
+
+  const handleSearchSubmit = (event?: React.FormEvent<HTMLFormElement>) => {
+    event?.preventDefault();
+    setSearchQuery(currentLocalQuery);
+    if(!currentLocalQuery && !initialQuery) { // If both global and initial query are empty, means user cleared the search bar
+        setIsSearchActive(true); // Keep search active to show "Search Campusverse" message
+    } else if (!currentLocalQuery && initialQuery) { // If user cleared a search that was initiated by clicking a tag, for example
+        setSearchQuery(""); // Clear global to show the "Search Campusverse" message
+        setIsSearchActive(true);
+    }
+  };
+  
+  // Effect to focus input when component mounts if isSearchActive
+  useEffect(() => {
+    const searchInput = document.getElementById('global-search-input') as HTMLInputElement | null;
+    if (searchInput) {
+        searchInput.focus();
+    }
+  }, []);
+
+
+  if (!searchQuery && !initialQuery && results.posts.length === 0 && results.users.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-muted-foreground p-8">
+        {/* Search input for empty state */}
+        <form onSubmit={handleSearchSubmit} className="w-full max-w-md mb-8 relative">
+          <SearchIconLucide className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+          <Input
+            id="global-search-input"
+            type="search"
+            placeholder="Search people, hashtags..."
+            value={currentLocalQuery}
+            onChange={handleInputChange}
+            className="pl-10 w-full text-base py-3 rounded-lg shadow-sm"
+          />
+        </form>
         <SearchIconLucide className="h-16 w-16 mb-4" />
         <h2 className="text-2xl font-semibold mb-2">Search Campusverse</h2>
         <p>Find posts, people, and hashtags.</p>
@@ -119,11 +165,24 @@ export function SearchResultsDisplay({ query }: SearchResultsDisplayProps) {
   }
 
   return (
-    <div className="space-y-8 p-4 md:p-6">
-       {query && (
-         <p className="text-muted-foreground text-lg">Showing results for: <span className="font-semibold text-primary">{query}</span></p>
+    <div className="space-y-6 p-4 md:p-6">
+      {/* Search Input Bar */}
+      <form onSubmit={handleSearchSubmit} className="relative">
+        <SearchIconLucide className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+        <Input
+          id="global-search-input"
+          type="search"
+          placeholder="Search people, hashtags..."
+          value={currentLocalQuery}
+          onChange={handleInputChange}
+          className="w-full pl-10 text-base py-3 rounded-lg shadow-sm"
+        />
+      </form>
+
+       {(searchQuery || initialQuery) && (
+         <p className="text-muted-foreground text-lg">Showing results for: <span className="font-semibold text-primary">{searchQuery || initialQuery}</span></p>
        )}
-       {!query && (
+       {!(searchQuery || initialQuery) && (
           <h1 className="text-3xl font-bold tracking-tight">Explore</h1>
        )}
 
@@ -165,8 +224,8 @@ export function SearchResultsDisplay({ query }: SearchResultsDisplayProps) {
               </div>
             </section>
           )}
-          {(results.posts.length === 0 && results.users.length === 0 && query) &&
-            <p className="text-muted-foreground text-center py-8">No results found for "{query}".</p>
+          {(results.posts.length === 0 && results.users.length === 0 && (searchQuery || initialQuery)) &&
+            <p className="text-muted-foreground text-center py-8">No results found for "{searchQuery || initialQuery}".</p>
           }
         </TabsContent>
 
@@ -188,7 +247,7 @@ export function SearchResultsDisplay({ query }: SearchResultsDisplayProps) {
                 </Card>
               ))}
             </div>
-          ) : <p className="text-muted-foreground text-center py-8">No accounts found{query ? ` matching "${query}"` : ''}.</p>}
+          ) : <p className="text-muted-foreground text-center py-8">No accounts found{(searchQuery || initialQuery) ? ` matching "${searchQuery || initialQuery}"` : ''}.</p>}
         </TabsContent>
         
         <TabsContent value="tags">
@@ -196,12 +255,20 @@ export function SearchResultsDisplay({ query }: SearchResultsDisplayProps) {
             <div className="flex flex-wrap gap-3">
               {results.hashtags.map(tag => (
                 <Button key={tag} variant="secondary" size="lg" asChild className="text-base">
-                  {/* In a real app, clicking a tag would set the search query to this tag */}
-                  <span className="cursor-pointer">{tag}</span>
+                  <span 
+                    className="cursor-pointer" 
+                    onClick={() => {
+                        setCurrentLocalQuery(tag);
+                        setSearchQuery(tag);
+                        setIsSearchActive(true);
+                    }}
+                  >
+                    {tag}
+                  </span>
                 </Button>
               ))}
             </div>
-          ) : <p className="text-muted-foreground text-center py-8">No tags found{query ? ` matching "${query}"` : ''}.</p>}
+          ) : <p className="text-muted-foreground text-center py-8">No tags found{(searchQuery || initialQuery) ? ` matching "${searchQuery || initialQuery}"` : ''}.</p>}
         </TabsContent>
 
         <TabsContent value="posts">
@@ -209,7 +276,7 @@ export function SearchResultsDisplay({ query }: SearchResultsDisplayProps) {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {results.posts.map(post => <PostCard key={post.id} post={post} />)}
             </div>
-          ) : <p className="text-muted-foreground text-center py-8">No posts found{query ? ` matching "${query}"` : ''}.</p>}
+          ) : <p className="text-muted-foreground text-center py-8">No posts found{(searchQuery || initialQuery) ? ` matching "${searchQuery || initialQuery}"` : ''}.</p>}
         </TabsContent>
       </Tabs>
     </div>
