@@ -63,7 +63,7 @@ export default function HelpPage() {
           <Accordion type="single" collapsible className="w-full">
             {faqs.map((faq, index) => (
               <AccordionItem value={`item-${index}`} key={index}>
-                <AccordionTrigger className="text-left hover:no-underline text-base">
+                <AccordionTrigger className="text-left hover:no-underline text-base" suppressHydrationWarning={true}>
                   {faq.question}
                 </AccordionTrigger>
                 <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
