@@ -46,49 +46,49 @@ body {
   }
 
   .dark {
-    --background: 220 26% 14%; /* Dark Gray #1A202C */
-    --foreground: 210 17% 87%; /* Light Gray #CBD5E0 for text */
+    --background: 0 0% 5%; /* #0D0D0D */
+    --foreground: 0 0% 100%; /* #FFFFFF */
 
-    --card: 220 26% 18%; /* Slightly lighter than background */
-    --card-foreground: 210 17% 87%;
+    --card: 0 0% 8%; /* #141414 */
+    --card-foreground: 0 0% 100%; /* #FFFFFF */
 
-    --popover: 220 26% 18%;
-    --popover-foreground: 210 17% 87%;
+    --popover: 0 0% 8%; /* #141414 */
+    --popover-foreground: 0 0% 100%; /* #FFFFFF */
 
-    --primary: 232 74% 66%; /* Deep Indigo #667EEA */
-    --primary-foreground: 220 26% 10%; /* Darker for text on primary */
+    --primary: 150 100% 50%; /* #00FF85 (Neon Green) */
+    --primary-foreground: 0 0% 5%; /* #0D0D0D (Dark text for contrast on Neon Green) */
 
-    --secondary: 220 15% 30%; /* A muted secondary */
-    --secondary-foreground: 210 17% 87%;
+    --secondary: 0 0% 15%; /* #262626 (Dark Gray) */
+    --secondary-foreground: 0 0% 100%; /* #FFFFFF */
 
-    --muted: 220 15% 25%;
-    --muted-foreground: 210 10% 60%; /* Lighter muted text */
+    --muted: 0 0% 10%; /* #1A1A1A (Slightly lighter dark gray) */
+    --muted-foreground: 0 0% 70%; /* #B3B3B3 (Light Gray for muted text) */
 
-    --accent: 268 70% 70%; /* Electric Purple #A779E9 */
-    --accent-foreground: 220 26% 10%; /* Darker for text on accent */
+    --accent: 210 100% 56%; /* #1E90FF (Electric Blue) */
+    --accent-foreground: 0 0% 100%; /* #FFFFFF (White for text on Electric Blue) */
 
-    --destructive: 0 70% 55%; /* A visible red for destructive actions */
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 70% 55%; /* Keeping existing red */
+    --destructive-foreground: 0 0% 98%; /* Keeping existing light text */
 
-    --border: 220 15% 25%;
-    --input: 220 15% 22%; /* Slightly darker input bg */
-    --ring: 232 74% 75%; /* Lighter primary for ring */
+    --border: 0 0% 12%; /* #1F1F1F (Dark Gray border) */
+    --input: 0 0% 10%; /* #1A1A1A (Input background) */
+    --ring: 150 100% 50%; /* #00FF85 (Neon Green for focus rings) */
 
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --chart-1: 150 100% 50%; /* Neon Green */
+    --chart-2: 210 100% 56%; /* Electric Blue */
+    --chart-3: 0 0% 70%;     /* Light Gray */
+    --chart-4: 150 80% 40%;  /* Darker Neon Green */
+    --chart-5: 210 80% 45%;  /* Darker Electric Blue */
     
     /* Sidebar specific colors for dark mode */
-    --sidebar-background: 220 26% 12%; /* Slightly darker than main bg */
-    --sidebar-foreground: 210 17% 80%;
-    --sidebar-primary: 232 74% 66%; /* Same as main primary */
-    --sidebar-primary-foreground: 220 26% 10%;
-    --sidebar-accent: 220 15% 25%; /* Use muted color for sidebar item hover */
-    --sidebar-accent-foreground: 210 17% 87%;
-    --sidebar-border: 220 15% 20%;
-    --sidebar-ring: 232 74% 75%;
+    --sidebar-background: 0 0% 4%; /* #0A0A0A (Slightly darker than main bg) */
+    --sidebar-foreground: 0 0% 95%; /* #F2F2F2 (Slightly off-white) */
+    --sidebar-primary: 150 100% 50%; /* #00FF85 (Neon Green for active items) */
+    --sidebar-primary-foreground: 0 0% 5%; /* #0D0D0D (Dark text on Neon Green) */
+    --sidebar-accent: 325 100% 50%; /* #FF0099 (Vivid Pink for hover) */
+    --sidebar-accent-foreground: 0 0% 100%; /* #FFFFFF (White text on Vivid Pink) */
+    --sidebar-border: 0 0% 10%; /* #1A1A1A (Darker border for sidebar elements) */
+    --sidebar-ring: 150 100% 50%; /* #00FF85 (Neon Green for focus rings) */
   }
 }
 
@@ -105,8 +105,8 @@ body {
 .spinner {
   width: 70.4px;
   height: 70.4px;
-  --clr: rgb(102, 126, 234); /* Deep Indigo #667EEA */
-  --clr-alpha: rgba(102, 126, 234, 0.1); /* Deep Indigo with alpha */
+  --clr: hsl(var(--primary)); /* Use primary color from theme */
+  --clr-alpha: hsla(var(--primary), 0.1); /* Use primary color with alpha */
   animation: spinner 1.6s infinite ease;
   transform-style: preserve-3d;
 }
