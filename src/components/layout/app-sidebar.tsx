@@ -37,25 +37,32 @@ const homeNavItem = { id: "home", label: "Home", icon: Home, tooltip: "Home Feed
 export function AppSidebar() {
   const pathname = usePathname();
   const { setIsSearchActive, setSearchQuery, isSearchActive } = useSearch();
+  const previousPathnameRef = React.useRef(pathname);
 
   const handleSearchClick = () => {
     setSearchQuery(''); 
     setIsSearchActive(true);
-    const searchInput = document.getElementById('global-search-input') as HTMLInputElement | null;
-    if (searchInput) {
-        searchInput.focus();
-    }
+    // Attempt to focus the input field if it's rendered
+    // This might need to be deferred if SearchResultsDisplay takes time to mount
+    requestAnimationFrame(() => {
+      const searchInput = document.getElementById('global-search-input') as HTMLInputElement | null;
+      if (searchInput) {
+          searchInput.focus();
+      }
+    });
   };
   
   React.useEffect(() => {
-    if (isSearchActive && pathname !== '/search') { // Keep search active if on actual search page, otherwise deactivate on nav
-      const isNavigatingToSearchPage = pathname === '/search'; // Example, adjust if your search results are not on a dedicated page
-      if (!isNavigatingToSearchPage) {
-          setIsSearchActive(false);
+    // If the pathname has actually changed and search is active,
+    // deactivate search. This handles cases like browser back/forward
+    // or other programmatic navigation.
+    if (pathname !== previousPathnameRef.current) {
+      if (isSearchActive) {
+        setIsSearchActive(false);
       }
+      previousPathnameRef.current = pathname;
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname]);
+  }, [pathname, isSearchActive, setIsSearchActive]);
 
 
   return (
