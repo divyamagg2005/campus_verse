@@ -1,8 +1,27 @@
-"use client"; // SidebarProvider and its children are client components
+
+"use client"; 
 
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { AppHeader } from "@/components/layout/app-header";
+import { SearchProvider, useSearch } from "@/contexts/SearchContext";
+import { SearchResultsDisplay } from "@/components/search/search-results-display";
+
+function AppLayoutContent({ children }: { children: React.ReactNode }) {
+  const { isSearchActive, searchQuery } = useSearch();
+
+  return (
+    <SidebarProvider defaultOpen={true}> {/* Default sidebar to open */}
+      <AppSidebar />
+      <SidebarInset className="flex flex-col">
+        <AppHeader />
+        <main className="flex-1 overflow-y-auto p-0 bg-background"> {/* Adjusted padding to p-0 for full-width search results */}
+          {isSearchActive ? <SearchResultsDisplay query={searchQuery} /> : children}
+        </main>
+      </SidebarInset>
+    </SidebarProvider>
+  );
+}
 
 export default function AppGroupLayout({
   children,
@@ -10,14 +29,8 @@ export default function AppGroupLayout({
   children: React.ReactNode;
 }) {
   return (
-    <SidebarProvider defaultOpen={true}> {/* Default sidebar to open */}
-      <AppSidebar />
-      <SidebarInset className="flex flex-col">
-        <AppHeader />
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 bg-background">
-          {children}
-        </main>
-      </SidebarInset>
-    </SidebarProvider>
+    <SearchProvider>
+      <AppLayoutContent>{children}</AppLayoutContent>
+    </SearchProvider>
   );
 }
