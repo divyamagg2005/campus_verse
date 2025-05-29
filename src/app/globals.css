@@ -55,40 +55,40 @@ body {
     --popover: 225 83% 19%; /* #081C59 */
     --popover-foreground: 0 0% 95%; /* #F2F2F2 */
 
-    --primary: 315 90% 49%; /* #F20CB5 (Bright Pink) */
-    --primary-foreground: 0 0% 100%; /* White for contrast on pink */
+    --primary: 264 66% 27%; /* #3D1773 (Deep Purple) - New Primary */
+    --primary-foreground: 0 0% 100%; /* White for contrast on Deep Purple */
 
-    --secondary: 264 66% 27%; /* #3D1773 (Deep Purple) */
+    --secondary: 303 80% 36%; /* #A6129C (Purple/Pink) - New Secondary */
     --secondary-foreground: 0 0% 95%; /* #F2F2F2 */
 
-    --muted: 264 60% 22%; /* Derived from #3D1773, made more muted */
+    --muted: 225 83% 15%; /* Darker than card */
     --muted-foreground: 0 0% 70%; /* Light Gray for muted text */
 
-    --accent: 303 80% 36%; /* #A6129C (Purple/Pink) */
+    --accent: 315 90% 49%; /* #F20CB5 (Bright Pink) - New Accent */
     --accent-foreground: 0 0% 100%; /* White */
 
     --destructive: 0 70% 55%; /* Keeping existing red */
     --destructive-foreground: 0 0% 98%; 
 
-    --border: 264 66% 23%; /* #3D1773 slightly adjusted */
-    --input: 225 80% 22%; /* Derived from card color, slightly lighter/different */
-    --ring: 315 90% 49%; /* #F20CB5 (Bright Pink for focus rings) */
+    --border: 225 83% 22%; /* Slightly lighter than card */
+    --input: 225 83% 20%; /* Similar to border */
+    --ring: 264 66% 27%; /* #3D1773 (Deep Purple for focus rings) - New Ring */
 
-    --chart-1: 315 90% 49%; /* #F20CB5 */
-    --chart-2: 303 80% 36%; /* #A6129C */
-    --chart-3: 264 66% 27%; /* #3D1773 */
-    --chart-4: 225 83% 25%; /* Lighter shade of #081C59 */
-    --chart-5: 213 90% 30%; /* Lighter shade of #011C40 */
+    --chart-1: 315 90% 49%; /* Bright Pink */
+    --chart-2: 303 80% 36%; /* Purple/Pink */
+    --chart-3: 264 66% 27%; /* Deep Purple (New Primary) */
+    --chart-4: 225 83% 25%; /* Lighter shade of Dark Blue card color */
+    --chart-5: 213 96% 30%; /* Lighter shade of Darkest Blue background */
     
     /* Sidebar specific colors for dark mode */
-    --sidebar-background: 213 96% 10%; /* Slightly darker variant of main background #011C40 */
+    --sidebar-background: 213 96% 10%; /* Slightly darker variant of main background */
     --sidebar-foreground: 0 0% 90%; /* #E6E6E6 (Slightly off-white) */
-    --sidebar-primary: 315 90% 49%; /* #F20CB5 (Bright Pink for active items) */
-    --sidebar-primary-foreground: 0 0% 100%; /* White text on Bright Pink */
-    --sidebar-accent: 303 80% 36%; /* #A6129C (Purple/Pink for hover) */
-    --sidebar-accent-foreground: 0 0% 100%; /* White text on Purple/Pink */
-    --sidebar-border: 264 66% 20%; /* Darker version of #3D1773 for sidebar elements */
-    --sidebar-ring: 315 90% 49%; /* #F20CB5 (Bright Pink for focus rings) */
+    --sidebar-primary: 264 66% 27%; /* #3D1773 (Deep Purple for active items) - New Sidebar Primary */
+    --sidebar-primary-foreground: 0 0% 100%; /* White text on Deep Purple */
+    --sidebar-accent: 315 90% 49%; /* #F20CB5 (Bright Pink for hover) - New Sidebar Accent */
+    --sidebar-accent-foreground: 0 0% 100%; /* White text on Bright Pink */
+    --sidebar-border: 225 83% 15%; /* Darker version for sidebar elements */
+    --sidebar-ring: 264 66% 27%; /* #3D1773 (Deep Purple for focus rings) - New Sidebar Ring */
   }
 }
 
