@@ -34,7 +34,8 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export function LoginForm() {
   const router = useRouter();
-  const { user, setUserProfile, setSelectedCollegeIdAndSave } = useAuth();
+  // Remove setUserProfile from destructuring as AuthContext handles it
+  const { user, setSelectedCollegeIdAndSave } = useAuth(); 
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -58,15 +59,9 @@ export function LoginForm() {
 
         if (userDocSnap.exists()) {
           const userData = userDocSnap.data();
-          // Update AuthContext with the full profile
-          setUserProfile({
-            uid: firebaseUser.uid,
-            email: firebaseUser.email,
-            fullName: userData.fullName,
-            collegeId: userData.collegeId,
-            avatarUrl: userData.avatarUrl,
-          });
-          await setSelectedCollegeIdAndSave(userData.collegeId); // This also updates localStorage
+          // AuthContext's onAuthStateChanged will handle setting the userProfile.
+          // We just need to ensure selectedCollegeId is processed.
+          await setSelectedCollegeIdAndSave(userData.collegeId); 
 
           toast({ title: "Login Successful!", description: "Welcome back to Campusverse." });
           if (userData.collegeId) {
@@ -75,24 +70,25 @@ export function LoginForm() {
             router.push("/select-college");
           }
         } else {
-          // This case should ideally not be reached if signup is correct
-           setUserProfile({ 
-            uid: firebaseUser.uid, 
-            email: firebaseUser.email, 
-            fullName: firebaseUser.displayName, 
-            collegeId: null,
-            avatarUrl: `https://placehold.co/128x128.png?text=${firebaseUser.displayName?.substring(0,2).toUpperCase() || 'U'}`
-          });
+          // This case means the user exists in Firebase Auth but not in Firestore.
+          // AuthContext's onAuthStateChanged will create a basic profile.
+          // We ensure selectedCollegeId is null and guide to select-college.
           await setSelectedCollegeIdAndSave(null);
-          toast({ title: "Login Successful!", description: "User profile setup needed." });
+          toast({ title: "Login Successful!", description: "Please complete your profile by selecting your college." });
           router.push("/select-college");
         }
       }
     } catch (error: any) {
       console.error("Login error:", error);
+      let errorMessage = "Invalid email or password. Please try again.";
+      if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+        errorMessage = "Invalid credentials. Please check your email and password.";
+      } else if (error.code === 'auth/too-many-requests') {
+        errorMessage = "Too many login attempts. Please try again later.";
+      }
       toast({
         title: "Login Failed",
-        description: error.message || "Invalid email or password. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
