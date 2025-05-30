@@ -18,6 +18,12 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LockKeyhole, Mail } from 'lucide-react';
 import { useRouter } from 'next/navigation'; 
+import { useAuth } from '@/contexts/AuthContext';
+import { auth, db } from '@/lib/firebase';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
+import { useToast } from '@/hooks/use-toast';
+import { useState } from 'react';
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
@@ -28,6 +34,10 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export function LoginForm() {
   const router = useRouter();
+  const { setSelectedCollegeIdAndSave } = useAuth();
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -36,11 +46,44 @@ export function LoginForm() {
     },
   });
 
-  function onSubmit(values: LoginFormValues) {
-    // Simulate API call
-    console.log("Login submitted", values);
-    // Redirect to select college page on successful login
-    router.push("/select-college"); 
+  async function onSubmit(values: LoginFormValues) {
+    setIsSubmitting(true);
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
+      const firebaseUser = userCredential.user;
+
+      if (firebaseUser) {
+        // Fetch user's collegeId from Firestore
+        const userDocRef = doc(db, "users", firebaseUser.uid);
+        const userDocSnap = await getDoc(userDocRef);
+
+        if (userDocSnap.exists()) {
+          const userData = userDocSnap.data();
+          if (userData.collegeId) {
+            await setSelectedCollegeIdAndSave(userData.collegeId);
+            toast({ title: "Login Successful!", description: "Welcome back to Campusverse." });
+            router.push("/feed");
+          } else {
+            // CollegeId not found, redirect to select college
+            toast({ title: "Login Successful!", description: "Please select your college." });
+            router.push("/select-college");
+          }
+        } else {
+          // Should not happen if signup flow is correct, but handle defensively
+          toast({ title: "Login Successful!", description: "User profile not found, please select your college." });
+          router.push("/select-college");
+        }
+      }
+    } catch (error: any) {
+      console.error("Login error:", error);
+      toast({
+        title: "Login Failed",
+        description: error.message || "Invalid email or password. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -61,7 +104,7 @@ export function LoginForm() {
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                     <FormControl>
-                      <Input type="email" placeholder="your.email@example.com" {...field} className="pl-10" suppressHydrationWarning={true} />
+                      <Input type="email" placeholder="your.email@example.com" {...field} className="pl-10" disabled={isSubmitting} />
                     </FormControl>
                   </div>
                   <FormMessage />
@@ -77,15 +120,15 @@ export function LoginForm() {
                     <div className="relative">
                       <LockKeyhole className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                       <FormControl>
-                        <Input type="password" placeholder="••••••••" {...field} className="pl-10" suppressHydrationWarning={true} />
+                        <Input type="password" placeholder="••••••••" {...field} className="pl-10" disabled={isSubmitting} />
                       </FormControl>
                     </div>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" suppressHydrationWarning={true}>
-              Login
+            <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isSubmitting}>
+              {isSubmitting ? "Logging in..." : "Login"}
             </Button>
           </form>
         </Form>

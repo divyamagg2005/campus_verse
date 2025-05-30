@@ -17,9 +17,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { User, Mail, LockKeyhole, School as SchoolIcon } from 'lucide-react'; // Renamed School to SchoolIcon
+import { User, Mail, LockKeyhole, School as SchoolIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { colleges } from '@/lib/colleges'; // Import shared colleges list
+import { colleges } from '@/lib/colleges';
+import { useAuth } from '@/contexts/AuthContext';
+import { auth, db } from '@/lib/firebase';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { useToast } from '@/hooks/use-toast';
+import { useState } from 'react';
 
 const signupSchema = z.object({
   fullName: z.string().min(2, { message: "Full name must be at least 2 characters." }),
@@ -36,6 +42,10 @@ type SignupFormValues = z.infer<typeof signupSchema>;
 
 export function SignupForm() {
   const router = useRouter();
+  const { setSelectedCollegeIdAndSave } = useAuth();
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const form = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
@@ -47,18 +57,42 @@ export function SignupForm() {
     },
   });
 
-  function onSubmit(values: SignupFormValues) {
-    // Simulate API call for signup
-    console.log("Signup submitted", values);
-    // In a real app, you'd handle user creation, email verification.
-    if (values.college) {
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('selectedCollegeId', values.college);
+  async function onSubmit(values: SignupFormValues) {
+    setIsSubmitting(true);
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
+      const firebaseUser = userCredential.user;
+
+      if (firebaseUser) {
+        // Update Firebase Auth profile (optional, displayName)
+        await updateProfile(firebaseUser, { displayName: values.fullName });
+
+        // Create user document in Firestore
+        const userDocRef = doc(db, "users", firebaseUser.uid);
+        await setDoc(userDocRef, {
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+          fullName: values.fullName,
+          collegeId: values.college,
+          createdAt: serverTimestamp(),
+          avatarUrl: `https://placehold.co/128x128.png?text=${values.fullName.substring(0,2).toUpperCase()}`, // Default avatar
+        });
+
+        // Update AuthContext and localStorage
+        await setSelectedCollegeIdAndSave(values.college);
+        
+        toast({ title: "Signup Successful!", description: "Welcome to Campusverse." });
+        router.push("/feed");
       }
-      router.push("/feed"); 
-    } else {
-      // Fallback, though college is required by schema
-      router.push("/feed"); 
+    } catch (error: any) {
+      console.error("Signup error:", error);
+      toast({
+        title: "Signup Failed",
+        description: error.message || "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -80,7 +114,7 @@ export function SignupForm() {
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                     <FormControl>
-                      <Input placeholder="Your Full Name" {...field} className="pl-10" suppressHydrationWarning={true} />
+                      <Input placeholder="Your Full Name" {...field} className="pl-10" disabled={isSubmitting} />
                     </FormControl>
                   </div>
                   <FormMessage />
@@ -96,7 +130,7 @@ export function SignupForm() {
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                     <FormControl>
-                      <Input type="email" placeholder="your.email@college.edu" {...field} className="pl-10" suppressHydrationWarning={true} />
+                      <Input type="email" placeholder="your.email@college.edu" {...field} className="pl-10" disabled={isSubmitting} />
                     </FormControl>
                   </div>
                   <FormMessage />
@@ -112,7 +146,7 @@ export function SignupForm() {
                   <div className="relative">
                     <LockKeyhole className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                     <FormControl>
-                      <Input type="password" placeholder="••••••••" {...field} className="pl-10" suppressHydrationWarning={true} />
+                      <Input type="password" placeholder="••••••••" {...field} className="pl-10" disabled={isSubmitting} />
                     </FormControl>
                   </div>
                   <FormMessage />
@@ -128,7 +162,7 @@ export function SignupForm() {
                   <div className="relative">
                     <LockKeyhole className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                     <FormControl>
-                      <Input type="password" placeholder="••••••••" {...field} className="pl-10" suppressHydrationWarning={true} />
+                      <Input type="password" placeholder="••••••••" {...field} className="pl-10" disabled={isSubmitting} />
                     </FormControl>
                   </div>
                   <FormMessage />
@@ -143,9 +177,9 @@ export function SignupForm() {
                   <FormLabel>College/University</FormLabel>
                   <div className="relative">
                      <SchoolIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground z-10" />
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isSubmitting}>
                       <FormControl>
-                        <SelectTrigger className="pl-10" suppressHydrationWarning={true}>
+                        <SelectTrigger className="pl-10">
                           <SelectValue placeholder="Select your college" />
                         </SelectTrigger>
                       </FormControl>
@@ -162,8 +196,8 @@ export function SignupForm() {
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" suppressHydrationWarning={true}>
-              Sign Up
+            <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isSubmitting}>
+              {isSubmitting ? "Signing up..." : "Sign Up"}
             </Button>
           </form>
         </Form>

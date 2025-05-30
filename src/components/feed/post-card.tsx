@@ -5,24 +5,25 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MessageCircle, Heart, Share2, FileText, Video, Image as ImageIcon } from "lucide-react";
+import { formatDistanceToNow } from 'date-fns'; // For timestamp formatting
 
+// Updated Post interface for Firebase
 export interface Post {
-  id: string;
-  author: {
-    name: string;
-    avatarUrl: string;
-    college?: string;
-    collegeId?: string; // Added for filtering
-  };
+  id: string; // Firestore document ID
+  authorUid: string;
+  authorName: string;
+  authorAvatarUrl: string;
   content?: string;
   imageUrl?: string;
-  dataAiHint?: string; // Added for placeholder images
+  dataAiHint?: string;
   videoUrl?: string;
   pdfUrl?: string;
   hashtags: string[];
-  timestamp: string; // e.g., "2h ago" or a full date
+  timestamp: { seconds: number, nanoseconds: number } | Date; // Firestore Timestamp or Date object
   likes: number;
   comments: number;
+  collegeId: string;
+  authorCollegeName?: string; // Optional: if you want to display author's college on the post
 }
 
 interface PostCardProps {
@@ -37,18 +38,28 @@ export function PostCard({ post }: PostCardProps) {
     return null;
   };
 
-  const fileType = post.imageUrl ? 'Image' : post.videoUrl ? 'Video' : post.pdfUrl ? 'PDF' : null;
+  const formatTimestamp = (timestamp: { seconds: number, nanoseconds: number } | Date): string => {
+    if (timestamp instanceof Date) {
+      return formatDistanceToNow(timestamp, { addSuffix: true });
+    }
+    if (timestamp && typeof timestamp.seconds === 'number') {
+      return formatDistanceToNow(new Date(timestamp.seconds * 1000), { addSuffix: true });
+    }
+    return 'Just now';
+  };
 
   return (
     <Card className="w-full shadow-lg rounded-xl overflow-hidden">
       <CardHeader className="flex flex-row items-center gap-3 p-4">
         <Avatar>
-          <AvatarImage src={post.author.avatarUrl} alt={post.author.name} data-ai-hint="user avatar" />
-          <AvatarFallback>{post.author.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+          <AvatarImage src={post.authorAvatarUrl} alt={post.authorName} data-ai-hint="user avatar" />
+          <AvatarFallback>{post.authorName.substring(0, 2).toUpperCase()}</AvatarFallback>
         </Avatar>
         <div className="flex-1">
-          <CardTitle className="text-base font-semibold">{post.author.name}</CardTitle>
-          <p className="text-xs text-muted-foreground">{post.timestamp} {post.author.college && `· ${post.author.college}`}</p>
+          <CardTitle className="text-base font-semibold">{post.authorName}</CardTitle>
+          <p className="text-xs text-muted-foreground">
+            {formatTimestamp(post.timestamp)} {post.authorCollegeName && `· ${post.authorCollegeName}`}
+          </p>
         </div>
       </CardHeader>
       <CardContent className="px-4 pb-2 space-y-3">
@@ -78,7 +89,7 @@ export function PostCard({ post }: PostCardProps) {
           </a>
         )}
 
-        {post.hashtags.length > 0 && (
+        {post.hashtags && post.hashtags.length > 0 && (
           <div className="flex flex-wrap gap-2 pt-2">
             {post.hashtags.map((tag) => (
               <Badge key={tag} variant="secondary" className="cursor-pointer hover:bg-accent hover:text-accent-foreground">

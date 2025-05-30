@@ -2,8 +2,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import React from "react"; // Import React
+import { usePathname, useRouter } from "next/navigation"; // Added useRouter
+import React from "react"; 
 import { Icons } from "@/components/icons";
 import {
   Sidebar,
@@ -17,10 +17,10 @@ import {
 import { cn } from "@/lib/utils";
 import { Home, MessageSquare, Settings, LogOut, HelpCircle, UserCircle, Search as SearchIcon, Bell, PlusSquare } from "lucide-react"; 
 import { useSearch } from "@/contexts/SearchContext"; 
+import { useAuth } from "@/contexts/AuthContext"; // Import useAuth
+import { useToast } from "@/hooks/use-toast"; // Import useToast
 
 const mainNavItems = [
-  // Home is now handled separately
-  // Search is now handled separately
   { id: "messages", label: "Messages", icon: MessageSquare, tooltip: "Messages", href: "/messages" },
   { id: "notifications", label: "Notifications", icon: Bell, tooltip: "Notifications", href: "/notifications" },
   { id: "create-post", label: "Create", icon: PlusSquare, tooltip: "Create Post", href: "/create-post" },
@@ -36,14 +36,15 @@ const homeNavItem = { id: "home", label: "Home", icon: Home, tooltip: "Home Feed
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const router = useRouter(); // Initialize useRouter
   const { setIsSearchActive, setSearchQuery, isSearchActive } = useSearch();
+  const { logout: firebaseLogout } = useAuth(); // Get logout from AuthContext
+  const { toast } = useToast(); // Initialize useToast
   const previousPathnameRef = React.useRef(pathname);
 
   const handleSearchClick = () => {
     setSearchQuery(''); 
     setIsSearchActive(true);
-    // Attempt to focus the input field if it's rendered
-    // This might need to be deferred if SearchResultsDisplay takes time to mount
     requestAnimationFrame(() => {
       const searchInput = document.getElementById('global-search-input') as HTMLInputElement | null;
       if (searchInput) {
@@ -53,9 +54,6 @@ export function AppSidebar() {
   };
   
   React.useEffect(() => {
-    // If the pathname has actually changed and search is active,
-    // deactivate search. This handles cases like browser back/forward
-    // or other programmatic navigation.
     if (pathname !== previousPathnameRef.current) {
       if (isSearchActive) {
         setIsSearchActive(false);
@@ -64,6 +62,17 @@ export function AppSidebar() {
     }
   }, [pathname, isSearchActive, setIsSearchActive]);
 
+  const handleLogout = async () => {
+    setIsSearchActive(false);
+    try {
+      await firebaseLogout();
+      toast({ title: "Logged Out", description: "You have been successfully logged out." });
+      // AuthContext handles redirect to /login
+    } catch (error) {
+      console.error("Logout failed:", error);
+      toast({ title: "Logout Failed", description: "Could not log you out. Please try again.", variant: "destructive" });
+    }
+  };
 
   return (
     <Sidebar collapsible="icon" variant="sidebar" side="left">
@@ -75,7 +84,6 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent className="flex-1 p-2">
         <SidebarMenu>
-          {/* Home Button Item */}
           <SidebarMenuItem key={homeNavItem.id}>
             <SidebarMenuButton
               asChild
@@ -86,7 +94,6 @@ export function AppSidebar() {
                 "data-[active=true]:bg-sidebar-primary data-[active=true]:text-sidebar-primary-foreground data-[active=true]:hover:bg-sidebar-primary/90",
                 "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
               )}
-              suppressHydrationWarning={true}
             >
               <Link href={homeNavItem.href}>
                 <homeNavItem.icon />
@@ -95,7 +102,6 @@ export function AppSidebar() {
             </SidebarMenuButton>
           </SidebarMenuItem>
 
-          {/* Search Button Item */}
           <SidebarMenuItem key="search-ui-trigger">
             <SidebarMenuButton
               onClick={handleSearchClick}
@@ -104,7 +110,6 @@ export function AppSidebar() {
                 "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                 isSearchActive && "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90" 
               )}
-              suppressHydrationWarning={true}
             >
               <SearchIcon />
               <span>Search</span>
@@ -122,7 +127,6 @@ export function AppSidebar() {
                   "data-[active=true]:bg-sidebar-primary data-[active=true]:text-sidebar-primary-foreground data-[active=true]:hover:bg-sidebar-primary/90",
                   "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                 )}
-                suppressHydrationWarning={true}
               >
                 <Link href={item.href}>
                   <item.icon />
@@ -146,7 +150,6 @@ export function AppSidebar() {
                   "data-[active=true]:bg-sidebar-primary data-[active=true]:text-sidebar-primary-foreground data-[active=true]:hover:bg-sidebar-primary/90",
                   "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                 )}
-                suppressHydrationWarning={true}
               >
                 <Link href={item.href}>
                   <item.icon />
@@ -159,8 +162,7 @@ export function AppSidebar() {
             <SidebarMenuButton 
               className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground" 
               tooltip={{ children: "Logout", className: "bg-sidebar-accent text-sidebar-accent-foreground" }}
-              onClick={() => { setIsSearchActive(false); alert('Logout clicked!'); /* router.push('/login'); */ }}
-              suppressHydrationWarning={true}
+              onClick={handleLogout}
             >
               <LogOut />
               <span>Logout</span>

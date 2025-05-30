@@ -1,79 +1,18 @@
 
-"use client"; // Make this a client component to use localStorage and useEffect
+"use client";
 
 import { useState, useEffect } from 'react';
 import { PostCard, type Post } from "@/components/feed/post-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
-import { Users } from "lucide-react";
+import { Users, School } from "lucide-react";
 import { CommunityCard, type Community } from "@/components/communities/community-card";
-import { School } from "lucide-react"; // For prompting college selection
-import { Button } from '@/components/ui/button'; // For prompting college selection
-import Link from 'next/link'; // For prompting college selection
-
-// Dummy data for posts - now with collegeId
-const allSamplePosts: Post[] = [
-  {
-    id: "1",
-    author: { name: "Alice Wonderland", avatarUrl: "https://placehold.co/40x40.png?text=AW", college: "Stanford University", collegeId: "stanford" },
-    content: "Just finished my midterms! 🎉 Anyone else feeling relieved? #MidtermsDone #CollegeLife",
-    hashtags: ["MidtermsDone", "CollegeLife"],
-    timestamp: "2h ago",
-    likes: 120,
-    comments: 15,
-    imageUrl: "https://placehold.co/600x400.png?text=Celebration",
-    dataAiHint: "celebration party",
-  },
-  {
-    id: "2",
-    author: { name: "Bob The Builder", avatarUrl: "https://placehold.co/40x40.png?text=BB", college: "MIT", collegeId: "mit" },
-    content: "Looking for a study group for Advanced Algorithms. DM me if interested! We'll meet at the library on Wednesdays.",
-    hashtags: ["StudyGroup", "Algorithms", "MIT"],
-    timestamp: "5h ago",
-    likes: 45,
-    comments: 8,
-  },
-  {
-    id: "3",
-    author: { name: "Charlie Brown", avatarUrl: "https://placehold.co/40x40.png?text=CB", college: "Harvard University", collegeId: "harvard" },
-    content: "Check out this amazing PDF on Quantum Physics I found! 🤯",
-    pdfUrl: "/sample.pdf", 
-    hashtags: ["QuantumPhysics", "Learning", "Science"],
-    timestamp: "1d ago",
-    likes: 78,
-    comments: 12,
-  },
-   {
-    id: "4",
-    author: { name: "Diana Prince", avatarUrl: "https://placehold.co/40x40.png?text=DP", college: "Caltech", collegeId: "caltech" },
-    content: "Our robotics club just won the national competition! So proud of the team. Here's a short video of our winning run.",
-    videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4", 
-    hashtags: ["Robotics", "Competition", "CaltechChamps"],
-    timestamp: "2d ago",
-    likes: 250,
-    comments: 30,
-  },
-  {
-    id: "5",
-    author: { name: "Eve Stanfordian", avatarUrl: "https://placehold.co/40x40.png?text=ES", college: "Stanford University", collegeId: "stanford" },
-    content: "Anyone going to the guest lecture on AI ethics tomorrow? #StanfordAI #EthicsInTech",
-    hashtags: ["StanfordAI", "EthicsInTech"],
-    timestamp: "6h ago",
-    likes: 90,
-    comments: 10,
-  },
-  {
-    id: "6",
-    author: { name: "Frank MITian", avatarUrl: "https://placehold.co/40x40.png?text=FM", college: "MIT", collegeId: "mit" },
-    content: "HackMIT registration is open! Let's form a team. #HackMIT #Innovation",
-    hashtags: ["HackMIT", "Innovation"],
-    timestamp: "10h ago",
-    likes: 110,
-    comments: 22,
-    imageUrl: "https://placehold.co/600x300.png?text=Hackathon",
-    dataAiHint: "hackathon code",
-  },
-];
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import { useAuth } from '@/contexts/AuthContext';
+import { db } from '@/lib/firebase';
+import { collection, query, where, orderBy, onSnapshot, Timestamp, getDocs } from 'firebase/firestore';
+import { getCollegeById } from '@/lib/colleges';
 
 // Dummy data for communities to display under the "Communities" tab
 const sampleCommunities: Community[] = [
@@ -85,7 +24,7 @@ const sampleCommunities: Community[] = [
     imageUrl: "https://placehold.co/400x200.png?text=Hackers",
     dataAiHint: "code computer",
     tags: ["coding", "technology", "hackathons"],
-    slug: "campus-hackers", // This slug would ideally point to a generic community, not a college one.
+    slug: "campus-hackers",
   },
   {
     id: "c2",
@@ -97,44 +36,133 @@ const sampleCommunities: Community[] = [
     tags: ["debate", "discussion", "publicspeaking"],
     slug: "debate-club",
   },
-  {
-    id: "c3",
-    name: "Art & Design Collective",
-    description: "A space for artists and designers to showcase work and collaborate.",
-    memberCount: 410,
-    tags: ["art", "design", "creative"],
-    slug: "art-design-collective",
-    // No image for this one, will use gradient
-  },
 ];
 
-
 export default function FeedPage() {
+  const { user, userProfile, selectedCollegeId, loading: authLoading } = useAuth();
   const [displayedPosts, setDisplayedPosts] = useState<Post[]>([]);
-  const [selectedCollegeId, setSelectedCollegeId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingPosts, setIsLoadingPosts] = useState(true);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const collegeId = localStorage.getItem('selectedCollegeId');
-      setSelectedCollegeId(collegeId);
-      if (collegeId) {
-        const filteredPosts = allSamplePosts.filter(post => post.author.collegeId === collegeId);
-        setDisplayedPosts(filteredPosts);
-      } else {
-        // If no college is selected, show no posts or prompt to select
-        setDisplayedPosts([]);
-      }
-      setIsLoading(false);
+    if (authLoading) {
+      setIsLoadingPosts(true);
+      return;
     }
-  }, []);
 
-  if (isLoading) {
+    if (!selectedCollegeId) {
+      setIsLoadingPosts(false);
+      setDisplayedPosts([]);
+      return;
+    }
+
+    setIsLoadingPosts(true);
+    const postsCollectionRef = collection(db, "posts");
+    const q = query(
+      postsCollectionRef,
+      where("collegeId", "==", selectedCollegeId),
+      orderBy("timestamp", "desc")
+    );
+
+    // Use onSnapshot for real-time updates if desired, or getDocs for one-time fetch
+    // For simplicity here, using getDocs initially, can be switched to onSnapshot
+    const fetchPosts = async () => {
+      try {
+        const querySnapshot = await getDocs(q);
+        const posts: Post[] = [];
+        const collegeDetails = getCollegeById(selectedCollegeId);
+
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          // Ensure timestamp is correctly handled (Firebase returns Timestamp object)
+          let postTimestamp = data.timestamp;
+          if (postTimestamp && typeof postTimestamp.toDate === 'function') {
+             postTimestamp = postTimestamp.toDate(); // Convert Firebase Timestamp to JS Date
+          } else if (postTimestamp && typeof postTimestamp.seconds === 'number') {
+             postTimestamp = new Date(postTimestamp.seconds * 1000);
+          }
+
+
+          posts.push({
+            id: doc.id,
+            authorUid: data.authorUid,
+            authorName: data.authorName,
+            authorAvatarUrl: data.authorAvatarUrl,
+            authorCollegeName: collegeDetails?.name, // Add college name to post author for display
+            content: data.content,
+            imageUrl: data.imageUrl,
+            dataAiHint: data.dataAiHint,
+            videoUrl: data.videoUrl,
+            pdfUrl: data.pdfUrl,
+            hashtags: data.hashtags || [],
+            timestamp: postTimestamp,
+            likes: data.likes || 0,
+            comments: data.comments || 0,
+            collegeId: data.collegeId,
+          });
+        });
+        setDisplayedPosts(posts);
+      } catch (error) {
+        console.error("Error fetching posts: ", error);
+      } finally {
+        setIsLoadingPosts(false);
+      }
+    };
+    
+    fetchPosts(); // For one-time fetch
+
+    // Example using onSnapshot for real-time updates:
+    /*
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const posts: Post[] = [];
+      const collegeDetails = getCollegeById(selectedCollegeId);
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        let postTimestamp = data.timestamp;
+          if (postTimestamp && typeof postTimestamp.toDate === 'function') {
+             postTimestamp = postTimestamp.toDate();
+          } else if (postTimestamp && typeof postTimestamp.seconds === 'number') {
+             postTimestamp = new Date(postTimestamp.seconds * 1000);
+          }
+        posts.push({
+          id: doc.id,
+          ...data,
+          timestamp: postTimestamp,
+          authorCollegeName: collegeDetails?.name,
+        } as Post);
+      });
+      setDisplayedPosts(posts);
+      setIsLoadingPosts(false);
+    }, (error) => {
+      console.error("Error fetching posts with onSnapshot: ", error);
+      setIsLoadingPosts(false);
+    });
+
+    return () => unsubscribe(); // Cleanup listener on component unmount
+    */
+
+  }, [selectedCollegeId, authLoading]);
+
+  if (authLoading || isLoadingPosts) {
     return (
       <div className="flex items-center justify-center h-full">
         <div className="spinner">
           {[...Array(6)].map((_, i) => <div key={i}></div>)}
         </div>
+      </div>
+    );
+  }
+
+  if (!user) { // Should be handled by layout redirect, but as a fallback
+    return (
+       <div className="flex flex-col items-center justify-center h-full text-center p-4 md:p-6">
+        <School className="h-16 w-16 text-primary mb-4" />
+        <h2 className="text-2xl font-semibold mb-2">Authentication Required</h2>
+        <p className="text-muted-foreground mb-4">
+          Please log in to view the feed.
+        </p>
+        <Button asChild>
+          <Link href="/login">Login</Link>
+        </Button>
       </div>
     );
   }
@@ -176,7 +204,7 @@ export default function FeedPage() {
                   <CardContent className="h-64 flex flex-col items-center justify-center text-center text-muted-foreground p-6">
                      <Users className="h-12 w-12 mb-4 opacity-50" />
                     <h3 className="text-xl font-semibold">No Posts Yet</h3>
-                    <p>There are no posts for your selected college yet. Be the first to share!</p>
+                    <p>There are no posts for {getCollegeById(selectedCollegeId)?.name || 'your college'} yet. Be the first to share!</p>
                   </CardContent>
                 </Card>
               )}
