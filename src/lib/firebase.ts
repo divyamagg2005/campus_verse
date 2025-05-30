@@ -3,15 +3,17 @@ import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
 import { getAuth, type Auth } from "firebase/auth";
 import { getFirestore, type Firestore } from "firebase/firestore";
 import { getStorage, type FirebaseStorage } from "firebase/storage";
+import { getAnalytics, type Analytics } from "firebase/analytics";
 
-// IMPORTANT: Replace these with your actual Firebase project configuration
+// Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY", // process.env.NEXT_PUBLIC_FIREBASE_API_KEY
-  authDomain: "YOUR_AUTH_DOMAIN", // process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
-  projectId: "YOUR_PROJECT_ID", // process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID
-  storageBucket: "YOUR_STORAGE_BUCKET", // process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID", // process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
-  appId: "YOUR_APP_ID", // process.env.NEXT_PUBLIC_FIREBASE_APP_ID
+  apiKey: "AIzaSyAtqN9Ou8QhOnKtGzL1iV6L_f8iFW0e2uw",
+  authDomain: "campus-verse.firebaseapp.com",
+  projectId: "campus-verse",
+  storageBucket: "campus-verse.appspot.com", // Corrected based on common Firebase setup, if firebasestorage.app is preferred, let me know.
+  messagingSenderId: "799353902994",
+  appId: "1:799353902994:web:6696eca6ae7ecf5e87934b",
+  measurementId: "G-8YE1JWJLGF"
 };
 
 // Initialize Firebase
@@ -19,15 +21,24 @@ let app: FirebaseApp;
 let auth: Auth;
 let db: Firestore;
 let storage: FirebaseStorage;
+let analytics: Analytics | undefined;
 
 if (getApps().length === 0) {
   app = initializeApp(firebaseConfig);
+  if (typeof window !== 'undefined') {
+    // Initialize Analytics only on the client side
+    analytics = getAnalytics(app);
+  }
 } else {
   app = getApp();
+  if (typeof window !== 'undefined' && !analytics) {
+     // Ensure analytics is initialized if app was already initialized (e.g. HMR)
+    analytics = getAnalytics(app);
+  }
 }
 
 auth = getAuth(app);
 db = getFirestore(app);
 storage = getStorage(app);
 
-export { app, auth, db, storage };
+export { app, auth, db, storage, analytics };
