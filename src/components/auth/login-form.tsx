@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LockKeyhole, Mail } from 'lucide-react';
-import { useRouter } from 'next/navigation'; 
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { auth, db } from '@/lib/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
@@ -34,7 +34,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export function LoginForm() {
   const router = useRouter();
-  const { setSelectedCollegeIdAndSave } = useAuth();
+  const { user, setUserProfile, setSelectedCollegeIdAndSave } = useAuth();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -53,24 +53,38 @@ export function LoginForm() {
       const firebaseUser = userCredential.user;
 
       if (firebaseUser) {
-        // Fetch user's collegeId from Firestore
         const userDocRef = doc(db, "users", firebaseUser.uid);
         const userDocSnap = await getDoc(userDocRef);
 
         if (userDocSnap.exists()) {
           const userData = userDocSnap.data();
+          // Update AuthContext with the full profile
+          setUserProfile({
+            uid: firebaseUser.uid,
+            email: firebaseUser.email,
+            fullName: userData.fullName,
+            collegeId: userData.collegeId,
+            avatarUrl: userData.avatarUrl,
+          });
+          await setSelectedCollegeIdAndSave(userData.collegeId); // This also updates localStorage
+
+          toast({ title: "Login Successful!", description: "Welcome back to Campusverse." });
           if (userData.collegeId) {
-            await setSelectedCollegeIdAndSave(userData.collegeId);
-            toast({ title: "Login Successful!", description: "Welcome back to Campusverse." });
             router.push("/feed");
           } else {
-            // CollegeId not found, redirect to select college
-            toast({ title: "Login Successful!", description: "Please select your college." });
             router.push("/select-college");
           }
         } else {
-          // Should not happen if signup flow is correct, but handle defensively
-          toast({ title: "Login Successful!", description: "User profile not found, please select your college." });
+          // This case should ideally not be reached if signup is correct
+           setUserProfile({ 
+            uid: firebaseUser.uid, 
+            email: firebaseUser.email, 
+            fullName: firebaseUser.displayName, 
+            collegeId: null,
+            avatarUrl: `https://placehold.co/128x128.png?text=${firebaseUser.displayName?.substring(0,2).toUpperCase() || 'U'}`
+          });
+          await setSelectedCollegeIdAndSave(null);
+          toast({ title: "Login Successful!", description: "User profile setup needed." });
           router.push("/select-college");
         }
       }
@@ -104,7 +118,14 @@ export function LoginForm() {
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                     <FormControl>
-                      <Input type="email" placeholder="your.email@example.com" {...field} className="pl-10" disabled={isSubmitting} />
+                      <Input
+                        type="email"
+                        placeholder="your.email@example.com"
+                        {...field}
+                        className="pl-10"
+                        disabled={isSubmitting}
+                        suppressHydrationWarning={true}
+                      />
                     </FormControl>
                   </div>
                   <FormMessage />
@@ -120,14 +141,26 @@ export function LoginForm() {
                     <div className="relative">
                       <LockKeyhole className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                       <FormControl>
-                        <Input type="password" placeholder="••••••••" {...field} className="pl-10" disabled={isSubmitting} />
+                        <Input
+                          type="password"
+                          placeholder="••••••••"
+                          {...field}
+                          className="pl-10"
+                          disabled={isSubmitting}
+                          suppressHydrationWarning={true}
+                        />
                       </FormControl>
                     </div>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isSubmitting}>
+            <Button
+              type="submit"
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+              disabled={isSubmitting}
+              suppressHydrationWarning={true}
+            >
               {isSubmitting ? "Logging in..." : "Login"}
             </Button>
           </form>
